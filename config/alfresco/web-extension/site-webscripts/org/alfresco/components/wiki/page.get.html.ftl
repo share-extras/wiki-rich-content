@@ -11,7 +11,7 @@
    <#assign pageList = [] />
 </#if>
 <#-- Version History -->
-<#if result.versionhistory??>
+<#if (result.versionhistory?? && result.versionhistory?size > 0)>
    <#assign currentVersion = result.versionhistory[0].version>
 <#else>
    <#assign currentVersion = "">
@@ -28,8 +28,8 @@
    new Alfresco.WikiPage("${args.htmlid}").setOptions(
    {
       siteId: "${page.url.templateArgs.site}",
-      pageTitle: "${page.url.args["title"]!""}",
-      mode: "${page.url.args["action"]!"view"}",
+      pageTitle: "${(page.url.args["title"]!"")?js_string}",
+      mode: "${(page.url.args["action"]!"view")?js_string}",
       <#if errorState>error: true,</#if>
       tags: [<#list tags as tag>"${tag}"<#if tag_has_next>,</#if></#list>],
       pages: [<#list pageList as p>"${p?js_string}"<#if p_has_next>, </#if></#list>],
@@ -58,11 +58,9 @@
 <div class="yui-g wikipage-bar">
 
    <div class="title-bar">
-      <div id="${args.htmlid}-viewButtons" class="yui-u first pageTitle">
-         ${page.url.args["title"]?replace("_", " ")}
-      </div>
+      <div id="${args.htmlid}-viewButtons" class="yui-u first pageTitle">${page.url.args["title"]?replace("_", " ")?html}</div>
       <div class="yui-u align-right">
-<#assign action = page.url.args["action"]!"view"> 
+<#assign action = page.url.args.action!"view">
 <#assign tabs =
 [
    { 
@@ -87,7 +85,7 @@
    <#elseif tab.permitted == false>
          <span class="tabLabelDisabled">${tab.label}</span>
    <#else>
-         <a href="?title=${page.url.args["title"]!""}&amp;action=${tab.action}" class="tabLabel">${tab.label}</a>
+         <a href="?title=${(page.url.args.title!"")?url}&amp;action=${tab.action?url}" class="tabLabel">${tab.label}</a>
    </#if>
    <#if tab_has_next>
          <span class="separator">|</span>
@@ -104,7 +102,7 @@
       <div class="page-form-body">
          <form id="${args.htmlid}-form" action="${page.url.context}/proxy/alfresco/slingshot/wiki/page/${page.url.templateArgs.site}/${page.url.args["title"]?url}" method="post">
             <fieldset>
-            <#assign pageContext = page.url.context + "/page/site/" + page.url.templateArgs.site + "/wiki-page?title=" + page.url.args["title"]>
+            <#assign pageContext = page.url.context + "/page/site/" + page.url.templateArgs.site + "/wiki-page?title=" + page.url.args.title?url>
                <input type="hidden" name="context" value="${pageContext?html}" />
                <input type="hidden" name="page" value="wiki-page" />
                <input type="hidden" name="currentVersion" value="${currentVersion}" />
@@ -143,7 +141,7 @@
          <div class="yui-g">
             <div class="yui-u first">
                <h2>
-                  ${result.title!""}
+                  ${(result.title!"")?html}
                   <#if result.versionhistory??><#list result.versionhistory as version><#if version_index == 0><span id="${args.htmlid}-version-header" class="light">${msg("label.shortVersion")}${version.version}</span></#if></#list></#if>
                </h2>
             </div>
@@ -215,7 +213,7 @@
                <div class="tags">
                <#if result.tags?? && result.tags?size &gt; 0>
                   <#list result.tags as tag>
-                     <div class="tag"><img src="${page.url.context}/components/images/tag-16.png" /> ${tag}</img></div>                    
+                     <div class="tag"><img src="${page.url.context}/res/components/images/tag-16.png" /> ${tag}</img></div>                    
                   </#list>
                <#else>
                   ${msg("label.none")}

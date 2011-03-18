@@ -3,19 +3,14 @@
 var wikipage = args.wikipage;
 if (wikipage)
 {
-   var uri = "/slingshot/wiki/page/" + page.url.templateArgs.site + "/" + encodeURIComponent(wikipage) + "",
+   var uri = "/slingshot/wiki/page/" + page.url.templateArgs.site + "/" + encodeURIComponent(wikipage) + "?format=mediawiki",
       connector = remote.connect("alfresco"),
       result = connector.get(uri),
       myConfig = new XML(config.script);
    
    if (result.status == status.STATUS_OK)
    {
-	  var response = eval('(' + result.response + ')')
-	  if (response.pagetext)
-      {
-         response.pagetext = myConfig.allowUnfilteredHTML == true ? response.pagetext : stringUtils.stripUnsafeHTML(response.pagetext);
-      }
-	  model.wikipage = response.pagetext;
+      model.wikipage = myConfig.allowUnfilteredHTML == true ? result.response : stringUtils.stripUnsafeHTML(result.response);
    }
    
    model.wikiLink = String(wikipage);
@@ -30,7 +25,7 @@ var userIsSiteManager = false;
 var obj = context.properties["memberships"];
 if (!obj)
 {
-   var json = remote.call("/api/sites/" + page.url.templateArgs.site + "/memberships/" + stringUtils.urlEncode(user.name));
+   var json = remote.call("/api/sites/" + page.url.templateArgs.site + "/memberships/" + encodeURIComponent(user.name));
    if (json.status == 200)
    {
       obj = eval('(' + json + ')');

@@ -1,26 +1,20 @@
 /**
- * Copyright (C) 2005-2008 Alfresco Software Limited.
+ * Copyright (C) 2005-2010 Alfresco Software Limited.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
+ * This file is part of Alfresco
+ *
+ * Alfresco is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Alfresco is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-
- * As a special exception to the terms and conditions of version 2.0 of 
- * the GPL, you may redistribute this Program in connection with Free/Libre 
- * and Open Source Software ("FLOSS") applications as described in Alfresco's 
- * FLOSS exception.  You should have recieved a copy of the text describing 
- * the FLOSS exception, and it is also available here: 
- * http://www.alfresco.com/legal/licensing
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Alfresco. If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -56,6 +50,7 @@
       Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview"]);
       this.selectedTags = [];
       this.parser = new Alfresco.WikiParser();
+      this.tocParser = new Alfresco.WikiTOCParser();
       return this;
    };
 
@@ -77,6 +72,14 @@
        * @type Alfresco.WikiParser
        */
       parser: null,
+      
+      /**
+       * An instance of a Wiki TOC parser for this page.
+       * 
+       * @property tocParser
+       * @type Alfresco.WikiTOCParser
+       */
+      tocParser: null,
       
       /**
        * Flag to indicate the user is forcing a save (newer version overwrite)
@@ -183,7 +186,16 @@
           * @type string
           * @default ""
           */
-         locale: ""
+         locale: "",
+
+         /**
+          * Whether a table of contents should be inserted into the wiki page
+          *
+          * @property tocEnabled
+          * @type boolean
+          * @default true
+          */
+         tocEnabled: true
       },
 
       /**
@@ -216,7 +228,13 @@
          {
             this.parser.URL = this._getAbsolutePath();
             // Format any wiki markup
-            pageText.innerHTML = this.parser.parse(this, pageText.innerHTML);
+            pageText.innerHTML = this.parser.parse(pageText.innerHTML, this.options.pages);
+            
+            // insert TOC, if enabled
+            if (this.options.tocEnabled)
+            {
+               this.tocParser.parse(this, pageText.innerHTML);
+            }
          }
          
          // Fire permissions event to allow other components to update their UI accordingly
@@ -352,9 +370,11 @@
          {
             height: 300,
             width: 600,
+            inline_styles: false,
+            convert_fonts_to_spans: false,
             theme: "advanced",
             plugins: "table,visualchars,emotions,advhr,print,directionality,fullscreen,insertdatetime",
-            theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect,forecolor,backcolor",
+            theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsizeselect,forecolor",
             theme_advanced_buttons2: "bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,alfresco-imagelibrary,image,cleanup,help,code,removeformat,|,insertdate,inserttime",
             theme_advanced_buttons3: "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,advhr,|,print,|,ltr,rtl,|,fullscreen",
             theme_advanced_toolbar_location: "top",
@@ -363,7 +383,7 @@
             theme_advanced_path : false,
             theme_advanced_resizing: true,
             siteId: this.options.siteId,
-            language:this.options.locale         
+            language: this.options.locale
          });
          this.pageEditor.addPageUnloadBehaviour(this.msg("message.unsavedChanges.wiki"));
          this.pageEditor.render();
@@ -526,7 +546,7 @@
       onVersionSelectChange: function WikiPage_onVersionSelectChange(sType, aArgs, p_obj)
       {
          var versionId = aArgs[1].value;
-         var actionUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "slingshot/wiki/version/{site}/{title}/{version}",
+         var actionUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + "components/wiki/version/{site}/{title}/{version}",
          {
             site: this.options.siteId,
             title: encodeURIComponent(this.options.pageTitle),
@@ -587,7 +607,7 @@
        */
       _getAbsolutePath: function WikiPage__getAbsolutePath()
       {
-         return Alfresco.constants.URL_CONTEXT + "page/site/" + this.options.siteId + "/wiki-page?title=";   
+         return Alfresco.constants.URL_PAGECONTEXT + "site/" + this.options.siteId + "/wiki-page?title=";   
       },
       
       /*
