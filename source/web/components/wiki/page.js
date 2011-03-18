@@ -233,7 +233,7 @@
             // insert TOC, if enabled
             if (this.options.mode != "details" && this.options.tocEnabled)
             {
-               this.tocParser.parse(this, pageText, pageText.innerHTML);
+               this.tocParser.parse(this, pageText);
             }
             
             // Enable prettyprint, if available

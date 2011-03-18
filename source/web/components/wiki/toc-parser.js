@@ -69,7 +69,7 @@
        * @param text {String} The text to render
        * @private
        */
-      _insertToc: function WikiTOCParser__insertToc(page, textElement, text)
+      _insertToc: function WikiTOCParser__insertToc(page, textElement)
       {
          var tocContent = "";
          var hCounts = [0, 0, 0, 0, 0, 0, 0];
