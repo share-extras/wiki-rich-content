@@ -314,7 +314,10 @@ table.versionHistory
 {
     list-style-type: square;
 }
-.wiki-page .rich-content pre
+.wiki-page .rich-content pre,
+.wiki-page .rich-content code,
+.wiki .rich-content pre,
+.wiki .rich-content code
 {
 	font-size: 1.1em;
 	line-height: 1.5em;
