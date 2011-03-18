@@ -247,7 +247,7 @@ table.versionHistory
     font-size: 1em;
     font-weight: 700;
     margin: 0 0 0 0;
-    padding: 0 0 0 0;
+    padding: 0 1em;
     display: inline;
 }
 .wiki-page .wiki-toc ul li, .wiki .wiki-toc ul li
@@ -257,4 +257,14 @@ table.versionHistory
 .wiki-page .break, .wiki .break
 {
     clear: both;
+}
+.wiki-page .section-anchor
+{
+	color: #999999;
+}
+.wiki-page .toc-toggle
+{
+	padding-left: 0.5em;
+   font-size: 0.9em;
+   font-weight: 400;
 }

@@ -12,7 +12,8 @@
     */
    var Dom = YAHOO.util.Dom,
        Event = YAHOO.util.Event,
-       Element = YAHOO.util.Element;
+       Element = YAHOO.util.Element,
+       Selector = YAHOO.util.Selector;
    
    /**
     * WikiTOCParser constructor.
@@ -26,7 +27,25 @@
    };
 
    Alfresco.WikiTOCParser.prototype =
-   {      
+   {
+      /**
+       * Object container for initialization options
+       *
+       * @property options
+       * @type object
+       */
+      options:
+      {
+         /**
+          * Minimum number of headings needed before a TOC is added
+          *
+          * @property tocMinHeadings
+          * @type int
+          * @default 2
+          */
+         tocMinHeadings: 2
+      },
+   
       /**
        * Parse the wiki page and insert a table of contents into the document.
        * 
@@ -62,94 +81,151 @@
                el.nodeName == "H4" || el.nodeName == "H5" || el.nodeName == "H6";
          }, null, textElement);
          
-         for (var i = 0; i < hdrElems.length; i++)
+         if (hdrElems.length >= this.options.tocMinHeadings)
          {
-            var hdrElem = hdrElems[i],
-               hdrLevel = parseInt(hdrElem.nodeName.substring(1, 2), 10),
-               hdrText = hdrElem.textContent||hdrElem.innerText;
-
-            // Increment counters
-            hCounts[hdrLevel] ++;
-            hCounts[0] ++;
-            
-            var aname = this._tocAnchorName(hdrText, anames);
-
-            // Add to TOC
-            for (var j=currLevel; j<hdrLevel; j++) tocContent += "\n<ul>\n<li class=\"toc-" + (j + 1) + "\">";
-            for (var j=currLevel; j>hdrLevel; j--) tocContent += "\n</li>\n</ul>";
-            if (currLevel == hdrLevel) tocContent += "</li>\n<li class=\"toc-" + hdrLevel + "\">";
-            tocContent += "<a href=\"#" + aname + "\">" + this._tocItemNum(hdrLevel, hCounts) + " " + hdrText + "</a>";
-
-            // Add <a name=""> elems in the page text plus whatever came before the match
-            hdrElem.innerHTML = "<a name=\"" + aname + "\">" + hdrElem.innerHTML + "</a>";
-            
-            currLevel = hdrLevel;
-         }
-
-         // Complete wiki TOC
-         for (var i=currLevel; i>1; i--)
-         {
-            tocContent += "\n</ul>";
-         }
-         var containerDiv = document.createElement("DIV");
-         Dom.addClass(containerDiv, "wiki-toc-container");
-         containerDiv.innerHTML = "<div class=\"wiki-toc\">" + 
-            "<div class=\"toc-title\"><h2>" + page.msg("label.tocHeader") + 
-            "</h2></div>" + tocContent + "</div><div class=\"break\"></div>";
-         
-         // Add TOC
-         var elems, n = 0;
-         
-         // Insert TOC before elements with toc-before class
-         elems = Dom.getElementsByClassName("toc-before", null, textElement);
-         for (var i = 0; i < elems.length; i++)
-         {
-            Dom.insertBefore(containerDiv, elems[i]);
-            n ++;
-         }
-         
-         // Insert TOC after elements with toc-after class
-         elems = Dom.getElementsByClassName("toc-after", null, textElement);
-         for (var i = 0; i < elems.length; i++)
-         {
-            Dom.insertAfter(containerDiv, elems[i]);
-            n ++;
-         }
-         
-         // Support __TOC__ marker, like MediaWiki
-         // See http://meta.wikimedia.org/wiki/MediaWiki_FAQ#How_do_I_add_a_table_of_contents.3F
-         elems = Dom.getElementsBy(function(el) {
-            return YAHOO.lang.trim(el.innerHTML) == "__TOC__"
-         }, "p", textElement);
-         for (var i = 0; i < elems.length; i++)
-         {
-            Dom.insertAfter(containerDiv, elems[i]);
-            textElement.removeChild(elems[i]);
-            n ++;
-         }
-         
-         // Support <wiki:toc /> marker, similar to http://code.google.com/p/support/wiki/WikiSyntax
-         elems = Dom.getElementsBy(function(el) {
-            return el.nodeName == "WIKI:TOC"
-         }, null, textElement);
-         for (var i = 0; i < elems.length; i++)
-         {
-            Dom.insertAfter(containerDiv, elems[i]);
-            textElement.removeChild(elems[i]);
-            n ++;
-         }
-         
-         // Insert at start of document if no TOC has been inserted yet
-         if (n == 0)
-         {
-            var fc = Dom.getFirstChild();
-            if (fc.nodeName == "P")
+            for (var i = 0; i < hdrElems.length; i++)
             {
-               Dom.insertAfter(containerDiv, fc);
+               var hdrElem = hdrElems[i],
+                  hdrLevel = parseInt(hdrElem.nodeName.substring(1, 2), 10),
+                  hdrText = YAHOO.lang.trim(hdrElem.textContent||hdrElem.innerText);
+
+               // Increment counters
+               hCounts[hdrLevel] ++;
+               hCounts[0] ++;
+               
+               var aname = this._tocAnchorName(hdrText, anames);
+
+               // Add to TOC
+               for (var j=currLevel; j<hdrLevel; j++) tocContent += "\n<ul>\n<li class=\"toc-" + (j + 1) + "\">";
+               for (var j=currLevel; j>hdrLevel; j--) tocContent += "\n</li>\n</ul>";
+               if (currLevel == hdrLevel) tocContent += "</li>\n<li class=\"toc-" + hdrLevel + "\">";
+               tocContent += "<a href=\"#" + aname + "\">" + this._tocItemNum(hdrLevel, hCounts) + " " + hdrText + "</a>";
+
+               // Add <a name=""> elems in the page text plus whatever came before the match
+               hdrElem.innerHTML = "<a name=\"" + aname + "\"></a>" + hdrElem.innerHTML.replace(/<br ?\/?>/, "");
+               var span = document.createElement("SPAN");
+               span.innerHTML = " <a href=\"#" + aname + "\" class=\"section-anchor\">¶</a>";
+               Dom.setStyle(span, "visibility", "hidden");
+               hdrElem.appendChild(span);
+               Event.addListener(hdrElem, "mouseover", function(e) {
+                  Dom.setStyle(Dom.getLastChild(this), "visibility", "visible")
+               });
+               Event.addListener(hdrElem, "mouseout", function(e) {
+                  Dom.setStyle(Dom.getLastChild(this), "visibility", "hidden")
+               });
+               
+               currLevel = hdrLevel;
             }
-            else
+
+            // Complete wiki TOC
+            for (var i=currLevel; i>1; i--)
             {
-               Dom.insertBefore(containerDiv, fc);
+               tocContent += "\n</ul>";
+            }
+            
+            function generateTocDiv(tc)
+            {
+               var containerDiv = document.createElement("DIV"),
+                  tocDiv = document.createElement("DIV"),
+                  tocTitleDiv = document.createElement("DIV"),
+                  tocContentDiv = document.createElement("DIV"),
+                  brDiv = document.createElement("DIV"),
+                  toggleSpan = document.createElement("SPAN"),
+                  toggleLink = document.createElement("A");
+               
+               Dom.addClass(containerDiv, "wiki-toc-container");
+               Dom.addClass(tocDiv, "wiki-toc");
+               Dom.addClass(tocTitleDiv, "toc-title");
+               Dom.addClass(tocContentDiv, "toc-content");
+               Dom.addClass(brDiv, "break");
+               Dom.addClass(toggleSpan, "toc-toggle");
+               Dom.addClass(toggleLink, "theme-color-1");
+               Dom.setAttribute(toggleLink, "href", "#");
+               
+               tocTitleDiv.innerHTML = "<h2>" + page.msg("label.tocHeader") + "</h2>";
+               tocContentDiv.innerHTML = tc;
+               
+               Event.addListener(toggleLink, "click", function(e) {
+                  Event.preventDefault(e);
+                  var content = Dom.getNextSibling(this.parentNode.parentNode.parentNode);
+                  if (Dom.getStyle(content, "display") == "none")
+                  {
+                     Dom.setStyle(content, "display", "block");
+                     this.innerHTML = "[" + page.msg("label.tocHide") + "]";
+                  }
+                  else
+                  {
+                     Dom.setStyle(content, "display", "none");
+                     this.innerHTML = "[" + page.msg("label.tocShow") + "]";
+                  }
+               });
+               toggleLink.innerHTML = "[" + page.msg("label.tocHide") + "]";
+               toggleSpan.appendChild(toggleLink);
+
+               Dom.getFirstChild(tocTitleDiv).appendChild(toggleSpan); // Append into h2 elem
+               tocDiv.appendChild(tocTitleDiv);
+               tocDiv.appendChild(tocContentDiv);
+               containerDiv.appendChild(tocDiv);
+               containerDiv.appendChild(brDiv);
+               return containerDiv;
+            }
+            
+            // Add TOC
+            var elems, n = 0;
+            
+            // Insert TOC before elements with toc-before class
+            elems = Dom.getElementsByClassName("toc-before", null, textElement);
+            for (var i = 0; i < elems.length; i++)
+            {
+               Dom.insertBefore(generateTocDiv(tocContent), elems[i]);
+               n ++;
+            }
+            
+            // Insert TOC after elements with toc-after class
+            elems = Dom.getElementsByClassName("toc-after", null, textElement);
+            for (var i = 0; i < elems.length; i++)
+            {
+               var sib = Dom.getNextSibling(elems[i]);
+               if (sib == null || !Dom.hasClass(sib, "wiki-toc-container"))
+               {
+                  Dom.insertAfter(generateTocDiv(tocContent), elems[i]);
+                  n ++;
+               }
+            }
+            
+            // Support __TOC__ marker, like MediaWiki
+            // See http://meta.wikimedia.org/wiki/MediaWiki_FAQ#How_do_I_add_a_table_of_contents.3F
+            elems = Dom.getElementsBy(function(el) {
+               return YAHOO.lang.trim(el.innerHTML).replace(/<br ?\/?>/, "") == "__TOC__"
+            }, "p", textElement);
+            for (var i = 0; i < elems.length; i++)
+            {
+               Dom.insertAfter(generateTocDiv(tocContent), elems[i]);
+               textElement.removeChild(elems[i]);
+               n ++;
+            }
+            
+            // Support <wiki:toc /> marker, similar to http://code.google.com/p/support/wiki/WikiSyntax
+            // Warning: this is not fully tested
+            elems = Dom.getElementsBy(function(el) {
+               return el.nodeName == "WIKI:TOC"
+            }, null, textElement);
+            for (var i = 0; i < elems.length; i++)
+            {
+               Dom.insertAfter(generateTocDiv(tocContent), elems[i]);
+               textElement.removeChild(elems[i]);
+               n ++;
+            }
+            
+            // Insert at start of document if no TOC has been inserted yet
+            if (n == 0)
+            {
+               // Insert before first heading
+               var hnodes = Selector.query("h1, h2, h3, h4, h5, h6", textElement);
+               if (hnodes != null)
+               {
+                  Dom.insertBefore(generateTocDiv(tocContent), hnodes[0]);
+               }
             }
          }
       },
