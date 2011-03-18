@@ -8,6 +8,13 @@
 (function()
 {
    /**
+    * YUI Library aliases
+    */
+   var Dom = YAHOO.util.Dom,
+       Event = YAHOO.util.Event,
+       Element = YAHOO.util.Element;
+   
+   /**
     * WikiTOCParser constructor.
     * 
     * @return {Alfresco.WikiTOCParser} The new parser instance
@@ -43,85 +50,108 @@
        * @param text {String} The text to render
        * @private
        */
-      _insertToc: function WikiTOCParser__insertToc(page, text)
+      _insertToc: function WikiTOCParser__insertToc(page, textElement, text)
       {
-         var currPos = 0;
-         var re = /<h([1-6])([\s]*[\w]*=?"?[^"]*?"?)>(.*?)<(?=\/h\1)\/h(\1)>/igm;
-         var myArray;
          var tocContent = "";
-         var pageContent = "";
          var hCounts = [0, 0, 0, 0, 0, 0, 0];
-         var anames = new Array();
+         var anames = [];
          var currLevel = 0;
-         while (myArray = re.exec(text))
+         
+         var hdrElems = Dom.getElementsBy(function(el) {
+            return el.nodeName == "H1" || el.nodeName == "H2" || el.nodeName == "H3" || 
+               el.nodeName == "H4" || el.nodeName == "H5" || el.nodeName == "H6";
+         }, null, textElement);
+         
+         for (var i = 0; i < hdrElems.length; i++)
          {
-            // Check myArray[1] == myArray[3] and in range 1-6
+            var hdrElem = hdrElems[i],
+               hdrLevel = parseInt(hdrElem.nodeName.substring(1, 2), 10),
+               hdrText = hdrElem.textContent||hdrElem.innerText;
+
             // Increment counters
-            hCounts[myArray[1]] ++;
+            hCounts[hdrLevel] ++;
             hCounts[0] ++;
+            
+            var aname = this._tocAnchorName(hdrText, anames);
+
             // Add to TOC
-            var aname = this._tocAnchorName(myArray[3], anames);
-            for (var i=currLevel; i<myArray[1]; i++) tocContent += "\n<ul>\n<li class=\"toc-" + (parseInt(i)+1).valueOf() + "\">";
-            for (var i=currLevel; i>myArray[1]; i--) tocContent += "\n</li>\n</ul>";
-            if (currLevel == myArray[1]) tocContent += "</li>\n<li class=\"toc-" + myArray[1] + "\">";
-            tocContent += "<a href=\"#" + aname + "\">" + this._tocItemNum(myArray[1], hCounts) + " " + myArray[3] + "</a>";
-            
+            for (var j=currLevel; j<hdrLevel; j++) tocContent += "\n<ul>\n<li class=\"toc-" + (j + 1) + "\">";
+            for (var j=currLevel; j>hdrLevel; j--) tocContent += "\n</li>\n</ul>";
+            if (currLevel == hdrLevel) tocContent += "</li>\n<li class=\"toc-" + hdrLevel + "\">";
+            tocContent += "<a href=\"#" + aname + "\">" + this._tocItemNum(hdrLevel, hCounts) + " " + hdrText + "</a>";
+
             // Add <a name=""> elems in the page text plus whatever came before the match
-            pageContent += 
-               (text.substring(currPos, re.lastIndex - myArray[0].length) + 
-               "<h" + myArray[1] + myArray[2] + "><a name=\"" + aname + "\">" + 
-               myArray[3] + "</a></h" + myArray[1] + ">");
+            hdrElem.innerHTML = "<a name=\"" + aname + "\">" + hdrElem.innerHTML + "</a>";
             
-            currPos = re.lastIndex;
-            currLevel = myArray[1];
+            currLevel = hdrLevel;
          }
-         for (var i=currLevel; i>1; i--) tocContent += "\n</ul>";
-         tocContent = "\n<div class=\"wiki-toc-container\"><div class=\"wiki-toc\">" + 
+
+         // Complete wiki TOC
+         for (var i=currLevel; i>1; i--)
+         {
+            tocContent += "\n</ul>";
+         }
+         var containerDiv = document.createElement("DIV");
+         Dom.addClass(containerDiv, "wiki-toc-container");
+         containerDiv.innerHTML = "<div class=\"wiki-toc\">" + 
             "<div class=\"toc-title\"><h2>" + page.msg("label.tocHeader") + 
-            "</h2></div>" + tocContent + "</div><div class=\"break\"></div></div>";
-            
-         // Add last fragment
-         pageContent += text.substring(currPos);
+            "</h2></div>" + tocContent + "</div><div class=\"break\"></div>";
          
          // Add TOC
+         var elems, n = 0;
          
          // Insert TOC before elements with toc-before class
-         var beforeRe = /<\w+ class="?toc-before"?>/mi;
-         var match = beforeRe.exec(pageContent);
-         if (match !== null)
+         elems = Dom.getElementsByClassName("toc-before", null, textElement);
+         for (var i = 0; i < elems.length; i++)
          {
-            pageContent = pageContent.substring(0, match.index) + tocContent +
-               pageContent.substring(match.index);
+            Dom.insertBefore(containerDiv, elems[i]);
+            n ++;
          }
+         
          // Insert TOC after elements with toc-after class
-         var afterRe = /<\w+ class="toc-after">[^<]*<(?=\/)\/\w+>/mi;
-         match = afterRe.exec(pageContent);
-         if (match !== null)
+         elems = Dom.getElementsByClassName("toc-after", null, textElement);
+         for (var i = 0; i < elems.length; i++)
          {
-            pageContent = pageContent.substring(0, match.index + match[0].length) + 
-               tocContent +
-               pageContent.substring(match.index + match[0].length);
+            Dom.insertAfter(containerDiv, elems[i]);
+            n ++;
          }
+         
          // Support __TOC__ marker, like MediaWiki
          // See http://meta.wikimedia.org/wiki/MediaWiki_FAQ#How_do_I_add_a_table_of_contents.3F
-         var tocRe = /<\w+>\s*__TOC__\s*<(?=\/)\/\w+>/mi;
-         match = tocRe.exec(pageContent);
-         if (match !== null)
+         elems = Dom.getElementsBy(function(el) {
+            return YAHOO.lang.trim(el.innerHTML) == "__TOC__"
+         }, "p", textElement);
+         for (var i = 0; i < elems.length; i++)
          {
-            pageContent = pageContent.substring(0, match.index) + 
-               tocContent +
-               pageContent.substring(match.index + match[0].length);
+            Dom.insertAfter(containerDiv, elems[i]);
+            textElement.removeChild(elems[i]);
+            n ++;
          }
+         
          // Support <wiki:toc /> marker, similar to http://code.google.com/p/support/wiki/WikiSyntax
-         var tagRe = /<wiki:toc\s*\/\s*>/mi;
-         match = tagRe.exec(pageContent);
-         if (match !== null)
+         elems = Dom.getElementsBy(function(el) {
+            return el.nodeName == "WIKI:TOC"
+         }, null, textElement);
+         for (var i = 0; i < elems.length; i++)
          {
-            pageContent = pageContent.substring(0, match.index) + 
-               tocContent +
-               pageContent.substring(match.index + match[0].length);
+            Dom.insertAfter(containerDiv, elems[i]);
+            textElement.removeChild(elems[i]);
+            n ++;
          }
-         return pageContent;
+         
+         // Insert at start of document if no TOC has been inserted yet
+         if (n == 0)
+         {
+            var fc = Dom.getFirstChild();
+            if (fc.nodeName == "P")
+            {
+               Dom.insertAfter(containerDiv, fc);
+            }
+            else
+            {
+               Dom.insertBefore(containerDiv, fc);
+            }
+         }
       },
       
       /**

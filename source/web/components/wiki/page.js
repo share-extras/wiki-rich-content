@@ -233,7 +233,7 @@
             // insert TOC, if enabled
             if (this.options.tocEnabled)
             {
-               this.tocParser.parse(this, pageText.innerHTML);
+               this.tocParser.parse(this, pageText, pageText.innerHTML);
             }
          }
          
