@@ -14,3 +14,6 @@
 <!-- Wiki Versioning -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/wiki/revert-wiki-version.css" />
 <@script type="text/javascript" src="${page.url.context}/res/modules/wiki/revert-wiki-version.js"></@script>
+<!-- Google Code Prettify -->
+<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/prettify/prettify.css" />
+<@script type="text/javascript" src="${page.url.context}/res/modules/prettify/prettify.js"></@script>

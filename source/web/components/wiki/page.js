@@ -231,9 +231,25 @@
             pageText.innerHTML = this.parser.parse(pageText.innerHTML, this.options.pages);
             
             // insert TOC, if enabled
-            if (this.options.tocEnabled)
+            if (this.options.mode != "details" && this.options.tocEnabled)
             {
                this.tocParser.parse(this, pageText, pageText.innerHTML);
+            }
+            
+            // Enable prettyprint, if available
+            if (typeof(prettyPrint) == "function")
+            {
+               var pElems = pageText.getElementsByTagName("pre");
+               for ( var i = 0; i < pElems.length; i++)
+               {
+                  Dom.addClass(pElems[i], "prettyprint");
+               }
+               var cElems = pageText.getElementsByTagName("code");
+               for ( var i = 0; i < cElems.length; i++)
+               {
+                  Dom.addClass(cElems[i], "prettyprint");
+               }
+               prettyPrint();
             }
          }
          

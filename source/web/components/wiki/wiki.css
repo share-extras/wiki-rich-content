@@ -314,6 +314,17 @@ table.versionHistory
 {
     list-style-type: square;
 }
+.wiki-page .rich-content pre
+{
+	font-size: 1.1em;
+	line-height: 1.5em;
+	border: 1px solid #cccccc;
+	padding: 1em;
+	margin: 0.5em 0;
+	background-color: #f0f0f0;
+	overflow: auto;
+	max-height: 30em;
+}
 
 /* TOC */
 /* TODO: Add support for .details-page-content class in details view */
