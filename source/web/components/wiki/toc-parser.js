@@ -114,7 +114,14 @@
                   Dom.setStyle(Dom.getLastChild(this), "visibility", "hidden")
                });
                
+               // Cache last header level
                currLevel = hdrLevel;
+               
+               // Reset header counts of sub-headings
+               for (var j = hdrLevel + 1; j < hCounts.length; j++)
+               {
+                  hCounts[j] = 0;
+               }
             }
 
             // Complete wiki TOC
