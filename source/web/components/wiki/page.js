@@ -47,10 +47,11 @@
     */
    Alfresco.WikiPage = function(htmlId)
    {
-      Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview"]);
+      Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator"]);
       this.selectedTags = [];
-      this.parser = new Alfresco.WikiParser();
-      this.tocParser = new Alfresco.WikiTOCParser();
+      this.parsers.parser = new Alfresco.WikiParser();
+      this.parsers.tocParser = new Alfresco.WikiTOCParser();
+      this.parsers.tableParser = new Alfresco.WikiTableParser();
       return this;
    };
 
@@ -64,22 +65,6 @@
        * @type array
        */
       selectedTags: null,
-      
-      /**
-       * An instance of a Wiki parser for this page.
-       * 
-       * @property parser
-       * @type Alfresco.WikiParser
-       */
-      parser: null,
-      
-      /**
-       * An instance of a Wiki TOC parser for this page.
-       * 
-       * @property tocParser
-       * @type Alfresco.WikiTOCParser
-       */
-      tocParser: null,
       
       /**
        * Flag to indicate the user is forcing a save (newer version overwrite)
@@ -98,6 +83,39 @@
        * @default null
        */
       savingPagePopup: null,
+      
+      /**
+       * Wiki page parsers
+       * 
+       * @property parsers
+       * @type object
+       */
+      parsers:
+      {
+         /**
+          * An instance of a Wiki parser for this page.
+          * 
+          * @property parser
+          * @type Alfresco.WikiParser
+          */
+         parser: null,
+         
+         /**
+          * An instance of a Wiki TOC parser for this page.
+          * 
+          * @property tocParser
+          * @type Alfresco.WikiTOCParser
+          */
+         tocParser: null,
+         
+         /**
+          * An instance of a Wiki table parser for this page.
+          * 
+          * @property tableParser
+          * @type Alfresco.WikiTableParser
+          */
+         tableParser: null
+      },
       
       /**
        * Object container for initialization options
@@ -195,7 +213,16 @@
           * @type boolean
           * @default true
           */
-         tocEnabled: true
+         tocEnabled: true,
+
+         /**
+          * Whether tables in the wiki page should be converted into YUI DataTables
+          *
+          * @property convertTables
+          * @type boolean
+          * @default true
+          */
+         convertTables: true
       },
 
       /**
@@ -226,14 +253,20 @@
          var pageText = Dom.get(this.id + "-page");
          if (pageText)
          {
-            this.parser.URL = this._getAbsolutePath();
+            this.parsers.parser.URL = this._getAbsolutePath();
             // Format any wiki markup
-            pageText.innerHTML = this.parser.parse(pageText.innerHTML, this.options.pages);
+            pageText.innerHTML = this.parsers.parser.parse(pageText.innerHTML, this.options.pages);
             
             // insert TOC, if enabled
             if (this.options.mode != "details" && this.options.tocEnabled)
             {
-               this.tocParser.parse(this, pageText);
+               this.parsers.tocParser.parse(this, pageText);
+            }
+
+            // Turn tables into DataSources
+            if (this.options.mode != "details" && this.options.convertTables)
+            {
+               this.parsers.tableParser.parse(this, pageText);
             }
             
             // Enable prettyprint, if available
@@ -598,7 +631,7 @@
       {        
          // Show the content
          var page = Dom.get(this.id + "-page");
-         page.innerHTML = this.parser.parse(event.serverResponse.responseText, this.options.pages);
+         page.innerHTML = this.parsers.parser.parse(event.serverResponse.responseText, this.options.pages);
 
          // Update the version label in the header
          var versionHeaderSpan = Dom.get(this.id + "-version-header");
