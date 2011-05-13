@@ -110,8 +110,7 @@
             }
             if (embed != null)
             {
-               //Dom.insertBefore(embed, linkEl.parentNode);
-               linkEl.parentNode.replaceChild(embed, linkEl);
+               Dom.insertBefore(embed, linkEl.parentNode);
             }
          }
       }
