@@ -3,9 +3,11 @@
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/wiki/wiki.css" />
 <link rel="alternate" type="application/wiki" href="${page.url.servletContext}/site/${page.url.templateArgs.site}/wiki-page?title=${(page.url.args.title!"")?url}&amp;action=edit" />
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/parser.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/components/wiki/page.js"></@script>
+<!-- Optional parsers -->
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/toc-parser.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/table-parser.js"></@script>
-<@script type="text/javascript" src="${page.url.context}/res/components/wiki/page.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/components/wiki/prettyprint-parser.js"></@script>
 <!-- Wiki Editor -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/simple-editor.css" />
 <@script type="text/javascript" src="${page.url.context}/res/modules/simple-editor.js"></@script>
