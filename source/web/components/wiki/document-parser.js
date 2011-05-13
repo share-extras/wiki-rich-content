@@ -118,7 +118,7 @@
                         {
                            new Alfresco.WebPreview(elId).setOptions(
                                  {
-                                    nodeRef: docMatch[2],
+                                    nodeRef: p_response.json.item.nodeRef,
                                     name: "",
                                     icon: "/components/images/generic-file-32.png",
                                     mimeType: p_response.json.item.mimetype,
