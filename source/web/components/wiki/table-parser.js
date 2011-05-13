@@ -1,9 +1,12 @@
 /**
- * Wiki Table parser. 
- * Parser turns all tables in a wiki page to DataTable instances.
+ * Parser that turns HTML tables in a wiki page to YUI DataTable instances.
+ * 
+ * <p>To use this plugin simply add class=&quot;datatable&quot; to the tables in your wiki
+ * markup.</p>
  * 
  * @namespace Alfresco
  * @class Alfresco.WikiTableParser
+ * @author Will Abson
  */
 (function()
 {
@@ -15,6 +18,12 @@
        Element = YAHOO.util.Element,
        DataSource = YAHOO.util.DataSource,
        DataTable = YAHOO.widget.DataTable;
+
+   /**
+    * Alfresco Slingshot aliases
+    */
+   var $html = Alfresco.util.encodeHTML,
+      $combine = Alfresco.util.combinePaths;
    
    /**
     * WikiTableParser constructor.
@@ -24,6 +33,9 @@
     */
    Alfresco.WikiTableParser = function()
    {
+      /* Decoupled event listeners */
+      YAHOO.Bubbling.on("pageContentAvailable", this.onPageContentAvailable, this);
+      
       return this;
    };
 
@@ -37,93 +49,81 @@
        */
       options:
       {
-         /**
-          * Minimum number of headings needed before a TOC is added
-          *
-          * @property tocMinHeadings
-          * @type int
-          * @default 2
-          */
-         tocMinHeadings: 2
       },
-   
+      
+      /**
+       * Widgets
+       *
+       * @property widgets
+       * @type object
+       */
+      widgets:
+      {
+      },
+      
+      /**
+       * Event handler called when the "pageContentAvailable" event is received.
+       * 
+       * @method onPageContentAvailable
+       * @param pageObj {Alfresco.WikiPage} The wiki page instance
+       * @param textEl {HTMLElement} The wiki page markup container element
+       */
+      onPageContentAvailable: function WikiTableParser_onPageContentAvailable(layer, args)
+      {
+         var pageObj = args[1].pageObj;
+         if (pageObj.options.mode != "details" && pageObj.options.convertTables)
+         {
+            return this._convertTables(pageObj, args[1].textEl);
+         }
+      },
+      
       /**
        * Parse the wiki page and convert all HTML tables in the document to YUI
        * DataTable instances.
        *
-       * @method parse
-       * @param page {Array} The wiki page instance
-       * @param text {String} The wiki page markup
+       * @method _convertTables
+       * @param pageObj {Alfresco.WikiPage} The wiki page instance
+       * @param textEl {HTMLElement} The wiki page markup container element
+       * @private
        */
-      parse: function WikiTableParser_parse(page, textElement)
+      _convertTables: function WikiTableParser__convertTables(pageObj, textEl)
       {
-         var els, tEls = [], 
-            tEl, dtEl, tId, dtId, myDataSource, cols, rows, hdrs, hd,
-            ds, dt, tdEl, thEl,
-            theadEl, tBodyEl, j;
+         var els, // All table instances from the Dom
+            tEls = [], // HTML tables
+            dltEls = [], // Datalist tables
+            tEl, // current selection
+            classes,
+            dlCmpts,
+            dlName;
          
-         /**
-          * Custom parser for table cell data
-          * @param oData
-          * @return
-          */
-         var myParser = function WikiTableParser_parse_parser(oData)
-         {
-            var cd = YAHOO.lang.trim(oData.replace("&nbsp;", " "));
-            
-            if (/^\d+$/.test(cd)) // int
-            {
-               return parseInt(cd);
-            }
-            else if (/^\d+\.\d+$/.test(cd)) // float
-            {
-               return parseInt(cd);
-            }
-            else if (/^(\d{2})\/(\d{2})\/(\d{4})$/.test(cd)) // date dd/MM/yyyy
-            {
-               var myArray = /(\d{2})\/(\d{2})\/(\d{4})/.exec(cd);
-               return new Date(myArray[3], myArray[2], myArray[1]);
-            }
-            else if (/^(\d{4})-(\d{2})-(\d{2})$/.test(cd)) // date yyyy-MM-dd
-            {
-               var myArray = /(\d{4})-(\d{2})-(\d{2})/.exec(cd);
-               return new Date(myArray[1], myArray[2], myArray[3]);
-            }
-            else if (/^([A-Za-z]{3,})[ \-](\d{1,2}),?[ \-](\d{2,4})$/.test(cd)) // date Aug 9, 1995
-            {
-               var myArray = /([A-Za-z]{3,})[ \-](\d{1,2}),?[ \-](\d{2,4})/.exec(cd);
-               return new Date("" + myArray[1] + " " + myArray[2] + ", " + (myArray[3].length == 2 ? (2000 + parseInt(myArray[3])) : myArray[3]));
-            }
-            else if (/^(\d{1,2})[ \-]([A-Za-z]{3,}),?[ \-](\d{2,4})$/.test(cd)) // date 9 Aug 1995
-            {
-               var myArray = /(\d{1,2})[ \-]([A-Za-z]{3,}),?[ \-](\d{2,4})/.exec(cd);
-               return new Date("" + myArray[2] + " " + myArray[1] + ", " + (myArray[3].length == 2 ? (2000 + parseInt(myArray[3])) : myArray[3]));
-            }
-            else
-            {
-               return cd;
-            }
-         };
-         
-         myRenderer = function WikiTableParser_parse_renderer(elLiner, oRecord, oColumn, oData)
-         {
-            if (Alfresco.util.isDate(oData))
-            {
-               elLiner.innerHTML = Alfresco.util.formatDate(oData, "ddd, d mmm yyyy");
-            }
-            else
-            {
-               elLiner.innerHTML = "" + oData;
-            }
-            return true;
-         };
-         
-         els = textElement.getElementsByTagName("table");
+         els = textEl.getElementsByTagName("table");
          for (var i = 0; i < els.length; i++)
          {
             if (Dom.hasClass(els[i], "datatable"))
             {
                tEls.push(els[i]);
+            }
+            else if (Dom.getAttribute(els[i], "class"))
+            {
+               classes = Dom.getAttribute(els[i], "class").split(" ");
+               for (var j = 0; j < classes.length; j++)
+               {
+                  if (classes[j].indexOf("datatable:") == 0)
+                  {
+                     dlCmpts = classes[j].split(":");
+                     if (dlCmpts.length == 2)
+                     {
+                        dlName = dlCmpts[1];
+                     }
+                  }
+               }
+               if (dlName != null)
+               {
+                  dltEls.push({
+                     element: els[i],
+                     dlName: dlName
+                  });
+               }
             }
          }
          
@@ -134,76 +134,410 @@
          
          for (var i = 0; i < tEls.length; i++)
          {
-            tEl = tEls[i];
-            tId = Dom.generateId(tEl, "wiki-table");
-            dtId = tId.replace("wiki-table", "wiki-dt");
-            dtEl = document.createElement("DIV");
-            Dom.setAttribute(dtEl, "id", dtId);
-            Dom.insertAfter(dtEl, tEl);
-            dtEl.appendChild(tEl); // Make table a child
-            
-            // Break the table down into rows
-            rows = tEl.getElementsByTagName("tr");
-            if (rows.length == 0)
-            {
-               return false;
-            }
-            
-            // Replace td's in the first row with th's
-            hdrs = rows[0].getElementsByTagName("td");
-            while (hdrs.length > 0)
-            {
-               tdEl = hdrs[0];
-               thEl = document.createElement("TH");
-               thEl.innerHTML = tdEl.innerHTML;
-               Dom.insertAfter(thEl, tdEl);
-               rows[0].removeChild(tdEl);
-               // TODO Can we not just call parentNode.replaceChild(newChild, oldChild) instead?
-            }
-            
-            // Add first row to a thead and the rest to a tbody
-            theadEl = document.createElement("THEAD");
-            theadEl.appendChild(rows[0]);
-            tEl.appendChild(theadEl);
-            Dom.insertBefore(theadEl, tEl.firstChild);
-            /*
-            if (tEl.getElementsByTagName("tbody").length > 0)
-            {
-               tBodyEl = tEl.getElementsByTagName("tbody")[0];
-            }
-            else
-            {
-               tBodyEl = document.createElement("TBODY");
-            }
-            for (j = 1; rows.length > 0; j++)
-            {
-               tBodyEl.appendChild(rows[0]);
-            }
-            */
-            //tEl.appendChild(tBodyEl);
-            
-            // Get the column names from the first row
-            cols = [];
-            hdrs = rows[0].getElementsByTagName("th");
-            for (j = 0; j < hdrs.length; j++)
-            {
-               hd = YAHOO.lang.trim(hdrs[j].textContent||hdrs[j].innerText);
-               hdrs[j].innerHTML = hd; // Remove HTML from the column
-               cols.push({ key: hd, sortable: true, parser: myParser, formatter: myRenderer });
-            }
-            
-            // Create the DataSource - this will remove all data from the table and populate the DS
-            ds = new YAHOO.util.DataSource(tEl);
-            ds.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-            ds.responseSchema = {
-               fields: cols
-            };
-            dt = new YAHOO.widget.DataTable(dtId, cols, ds);
+            this._createFromHTML(tEls[i]);
+         }
+         
+         for (var i = 0; i < dltEls.length; i++)
+         {
+            this._createFromDL(dltEls[i].element, dltEls[i].dlName, pageObj.options.siteId);
          }
          
          return true;
+      },
+
+      /**
+       * Custom parser for table cell data
+       * 
+       * @method _myParser
+       * @param oData {string}   Cell contents
+       * @return {string|int|float|Date} Parsed data
+       * @private
+       */
+      _myParser: function WikiTableParser_parse_parser(oData)
+      {
+         var cd = YAHOO.lang.trim(oData.replace("&nbsp;", " "));
+         
+         if (/^\d+$/.test(cd)) // int
+         {
+            return parseInt(cd);
+         }
+         else if (/^\d+\.\d+$/.test(cd)) // float
+         {
+            return parseInt(cd);
+         }
+         else if (/^(\d{2})\/(\d{2})\/(\d{4})$/.test(cd)) // date dd/MM/yyyy
+         {
+            var myArray = /(\d{2})\/(\d{2})\/(\d{4})/.exec(cd);
+            return new Date(myArray[3], myArray[2], myArray[1]);
+         }
+         else if (/^(\d{4})-(\d{2})-(\d{2})$/.test(cd)) // date yyyy-MM-dd
+         {
+            var myArray = /(\d{4})-(\d{2})-(\d{2})/.exec(cd);
+            return new Date(myArray[1], myArray[2], myArray[3]);
+         }
+         else if (/^([A-Za-z]{3,})[ \-](\d{1,2}),?[ \-](\d{2,4})$/.test(cd)) // date Aug 9, 1995
+         {
+            var myArray = /([A-Za-z]{3,})[ \-](\d{1,2}),?[ \-](\d{2,4})/.exec(cd);
+            return new Date("" + myArray[1] + " " + myArray[2] + ", " + (myArray[3].length == 2 ? (2000 + parseInt(myArray[3])) : myArray[3]));
+         }
+         else if (/^(\d{1,2})[ \-]([A-Za-z]{3,}),?[ \-](\d{2,4})$/.test(cd)) // date 9 Aug 1995
+         {
+            var myArray = /(\d{1,2})[ \-]([A-Za-z]{3,}),?[ \-](\d{2,4})/.exec(cd);
+            return new Date("" + myArray[2] + " " + myArray[1] + ", " + (myArray[3].length == 2 ? (2000 + parseInt(myArray[3])) : myArray[3]));
+         }
+         else
+         {
+            return cd;
+         }
+      },
+
+      /**
+       * Custom dynamic cell renderer
+       * 
+       * @method _myRenderer
+       * @param elLiner {object}   Liner element
+       * @param oRecord {object}   Record object
+       * @param oColumn {object}   Column object
+       * @param oData {object}   Data object
+       * @return {boolean} Whether to render the cell
+       * @private
+       */
+      _myRenderer: function WikiTableParser_parse_renderer(elLiner, oRecord, oColumn, oData)
+      {
+         if (Alfresco.util.isDate(oData))
+         {
+            elLiner.innerHTML = Alfresco.util.formatDate(oData, "ddd, d mmm yyyy");
+         }
+         else
+         {
+            elLiner.innerHTML = "" + oData;
+         }
+         return true;
+      },
+
+      /**
+       * Modify the specified table, using data from the first row within a thead
+       * element. Convert any td elements in this first row to th elements.
+       * 
+       * @method _insertHeadEl
+       * @param tEl {object}   Table element from the Dom
+       * @return null
+       * @private
+       */
+      _insertHeadEl: function WikiTableParser__insertHeadEl(tEl)
+      {
+         // Break the table down into rows
+         var rows = tEl.getElementsByTagName("tr");
+         if (rows.length == 0)
+         {
+            return false;
+         }
+         
+         // Replace td's in the first row with th's
+         var hdrs = rows[0].getElementsByTagName("td"), tdEl, thEl;
+         while (hdrs.length > 0)
+         {
+            tdEl = hdrs[0];
+            thEl = document.createElement("TH");
+            thEl.innerHTML = tdEl.innerHTML;
+            Dom.insertAfter(thEl, tdEl);
+            rows[0].removeChild(tdEl);
+            // TODO Can we just call parentNode.replaceChild(newChild, oldChild) instead?
+         }
+         // Add first row to a thead and the rest to a tbody
+         theadEl = document.createElement("THEAD");
+         theadEl.appendChild(rows[0]);
+         //tEl.appendChild(theadEl);
+         Dom.insertBefore(theadEl, tEl.firstChild);
+      },
+
+      /**
+       * Create a DataTable container element for the specified table. The table
+       * will be moved into the new element as a child.
+       * 
+       * @method _createContainerDiv
+       * @param tEl {object}   Table element from the Dom
+       * @return null
+       * @private
+       */
+      _createContainerDiv: function WikiTableParser__createContainerDiv(tEl)
+      {
+         var dtEl, tId, dtId;
+         
+         tId = Dom.generateId(tEl, "-wiki-table");
+         dtId = tId.replace("-wiki-table", "-wiki-dt");
+         dtEl = document.createElement("DIV");
+         Dom.setAttribute(dtEl, "id", dtId);
+         Dom.insertAfter(dtEl, tEl);
+         dtEl.appendChild(tEl); // Make table a child
+         return dtEl;
+      },
+
+      /**
+       * Create a DataTable instance from the given HTML table
+       * 
+       * @method _createFromHTML
+       * @param tEl {object}   Table element from the Dom
+       * @return null
+       * @private
+       */
+      _createFromHTML: function WikiTableParser__createFromHTML(tEl)
+      {
+         var dtEl, cols, rows, hdrs, hd, ds, dt, j;
+         
+         // Create container element around the table
+         dtEl = this._createContainerDiv(tEl);
+         
+         // Create THEAD element
+         this._insertHeadEl(tEl);
+         
+         /*
+         if (tEl.getElementsByTagName("tbody").length > 0)
+         {
+            tBodyEl = tEl.getElementsByTagName("tbody")[0];
+         }
+         else
+         {
+            tBodyEl = document.createElement("TBODY");
+         }
+         for (j = 1; rows.length > 0; j++)
+         {
+            tBodyEl.appendChild(rows[0]);
+         }
+         */
+         //tEl.appendChild(tBodyEl);
+         
+         // Get the column names from the first row
+         rows = tEl.getElementsByTagName("tr");
+         cols = [];
+         hdrs = rows[0].getElementsByTagName("th");
+         for (j = 0; j < hdrs.length; j++)
+         {
+            hd = YAHOO.lang.trim(hdrs[j].textContent||hdrs[j].innerText);
+            hdrs[j].innerHTML = hd; // Remove HTML from the column
+            cols.push({ key: hd, sortable: true, parser: this._myParser, formatter: this._myRenderer });
+         }
+         
+         // Create the DataSource - this will remove all data from the table and populate the DS
+         ds = new YAHOO.util.DataSource(tEl);
+         ds.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+         ds.responseSchema = {
+            fields: cols
+         };
+         dt = new YAHOO.widget.DataTable(dtEl, cols, ds);
+      },
+
+      /**
+       * Get a list of the names of table column headings, based on the contents
+       * of the th elements in the table.
+       * 
+       * @method _getTableColumnNames
+       * @param tEl {object}   Table element from the Dom
+       * @return {Array} Names of the column headings in the table as strings
+       * @private
+       */
+      _getTableColumnNames: function WikiTableParser__getTableColumnNames(tEl)
+      {
+         var names = [], name;
+         // Get the column names from the first row
+         var hdrs = tEl.getElementsByTagName("th");
+         for (var j = 0; j < hdrs.length; j++)
+         {
+            name = YAHOO.lang.trim(hdrs[j].textContent||hdrs[j].innerText);
+            if (name != "")
+            {
+               names.push(name);
+            }
+         }
+         return names;
+      },
+
+      /**
+       * Create a DataTable instance from the given HTML table, which should specify
+       * a datalist GUID as a CSS class named datatable:guid.
+       * 
+       * <p>Any rows in the HTML table will be ignored. A new DataTable instance will be created
+       * using data from the Data List with the specified GUID. Table column names will be checked,
+       * however, and only those columns in the Data List that have been specified will be displayed.</p>
+       * 
+       * @method _createFromDL
+       * @param tEl {object}   Table element from the Dom
+       * @return null
+       * @private
+       */
+      _createFromDL: function WikiTableParser__createFromHTML(tEl, dlName, siteId)
+      {
+         var dtEl, fields, cols, tCols, dlCols, rows, hdrs, hd, ds, dt, j, dlNodeRef, dlType, dataRequestFields = [];
+         
+         // Create container element around the table
+         dtEl = this._createContainerDiv(tEl);
+         
+         // Create THEAD element
+         this._insertHeadEl(tEl);
+         
+         var successHandler = function WikiTableParser__createFromHTML_successHandler(sRequest, oResponse, oPayload)
+         {
+            this.onDataReturnInitializeTable.call(this, sRequest, oResponse, oPayload);
+         };
+
+         var failureHandler = function DWikiTableParser__createFromHTML_failureHandler(sRequest, oResponse)
+         {
+            if (oResponse.status == 401)
+            {
+               // Our session has likely timed-out, so refresh to offer the login page
+               window.location.reload(true);
+            }
+            else
+            {
+               try
+               {
+                  var response = YAHOO.lang.JSON.parse(oResponse.responseText);
+                  this.set("MSG_ERROR", response.message);
+                  this.showTableMessage(response.message, YAHOO.widget.DataTable.CLASS_ERROR);
+               }
+               catch(e)
+               {
+                  // Do nothing;
+               }
+            }
+         };
+         
+         // Load the list of data lists in the site
+         Alfresco.util.Ajax.jsonGet(
+         {
+            url: Alfresco.constants.PROXY_URI + "slingshot/datalists/lists/site/" + encodeURI(siteId) + "/dataLists",
+            successCallback:
+            {
+               fn: function WikiTableParser__createFromHTML_success(p_response)
+               {
+                  var lists = p_response.json.datalists;
+                  for (var i = 0; i < lists.length; i++)
+                  {
+                     if (lists[i].name == dlName)
+                     {
+                        dlNodeRef = lists[i].nodeRef;
+                        dlType = lists[i].itemType;
+                     }
+                  }
+                  
+                  if (dlNodeRef != null)
+                  {
+                     tCols = this._getTableColumnNames(tEl);
+                     // Load the list of columns for this data type
+                     Alfresco.util.Ajax.jsonGet(
+                     {
+                        url: Alfresco.constants.URL_SERVICECONTEXT + "components/data-lists/config/columns?itemType=" + encodeURI(dlType.replace("_", ":")),
+                        successCallback:
+                        {
+                           fn: function WikiTableParser__createFromHTML_success(p_response)
+                           {
+                              dlCols = p_response.json.columns;
+                              fields = [], cols = [];
+                              for (var i = 0; i < dlCols.length; i++)
+                              {
+                                 if (tCols.length == 0 || Alfresco.util.arrayContains(tCols, dlCols[i].label) ||
+                                       Alfresco.util.arrayContains(tCols, dlCols[i].formsName))
+                                 {
+                                    fields.push({
+                                       key: "itemData." + dlCols[i].formsName
+                                    });
+                                    cols.push({
+                                       key: "itemData." + dlCols[i].formsName,
+                                       sortable: true,
+                                       label: dlCols[i].label,
+                                       formatter: function WikiTableParser_cFDL_renderer(elLiner, oRecord, oColumn, oData)
+                                       {
+                                          if (typeof(oData) == "object" && typeof(oData.displayValue) != "undefined")
+                                          {
+                                             elLiner.innerHTML = "" + oData.displayValue;
+                                          }
+                                          else
+                                          {
+                                             elLiner.innerHTML = "";
+                                          }
+                                       }
+                                    });
+                                    // Add to list of explicit fields we must request from the datasource
+                                    dataRequestFields.push(dlCols[i].name.replace(":", "_"));
+                                 }
+                              }
+                              // Use an XHRDataSource
+                              ds = new YAHOO.util.XHRDataSource(
+                                 Alfresco.constants.PROXY_URI + $combine("slingshot/datalists/data/node/", dlNodeRef.replace("://", "/")),
+                                 {
+                                    connMethodPost: true
+                                 }
+                              );
+                              
+                              // Set the responseType 
+                              ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
+                              // Define the schema of the results
+                              ds.responseSchema = {
+                                    resultsList : "items",
+                                    fields: fields,
+                                    metaFields: {
+                                       startIndex: "metadata.startIndex",
+                                       totalRecords: "metadata.totalRecords"
+                                    }
+                              };
+                              // Enable caching
+                              ds.maxCacheEntries = 5;
+                              
+                              ds.connMgr.setDefaultPostHeader(Alfresco.util.Ajax.JSON);
+            
+                              this.widgets.dataSource = ds;
+                              
+                              // Create the DataTable
+                              dt = new YAHOO.widget.DataTable(dtEl, cols, ds, {
+                                 initialLoad: false
+                              });
+                              
+                              var requestParams =
+                              {
+                                 fields: dataRequestFields,
+                                 filter: {
+                                    filterId: "all",
+                                    filterData: ""
+                                 }
+                              };
+                              
+                              ds.sendRequest(YAHOO.lang.JSON.stringify(requestParams),
+                              {
+                                 success: successHandler,
+                                 failure: failureHandler,
+                                 scope: dt
+                              });
+                           },
+                           scope: this
+                        },
+                        failureCallback:
+                        {
+                           fn: function WikiTableParser__createFromHTML_failure(p_response) {
+                              alert("failed to load columns");
+                           },
+                           scope: this
+                        },
+                        scope: this,
+                        noReloadOnAuthFailure: true
+                     });
+                  }
+                  else
+                  {
+                     alert("could not find data list " + dlName)
+                  }
+               },
+               failureCallback:
+               {
+                  fn: function WikiTableParser__createFromHTML_failure(p_response) {
+                     alert("failed to load data lists");
+                  },
+                  scope: this
+               },
+               scope: this,
+               noReloadOnAuthFailure: true
+            }
+         });
       }
-      
    };
    
 })();

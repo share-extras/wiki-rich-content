@@ -1,9 +1,9 @@
 /**
- * Wiki TOC parser. 
  * Parser that inserts a table of contents into a wiki page.
  * 
  * @namespace Alfresco
  * @class Alfresco.WikiTOCParser
+ * @author Will Abson
  */
 (function()
 {
@@ -23,6 +23,9 @@
     */
    Alfresco.WikiTOCParser = function()
    {
+      /* Decoupled event listeners */
+      YAHOO.Bubbling.on("pageContentAvailable", this.onPageContentAvailable, this);
+      
       return this;
    };
 
@@ -45,31 +48,36 @@
           */
          tocMinHeadings: 2
       },
-   
+      
+      /**
+       * Event handler called when the "pageContentAvailable" event is received.
+       * 
+       * @method onPageContentAvailable
+       * @param pageObj {Alfresco.WikiPage} The wiki page instance
+       * @param textEl {HTMLElement} The wiki page markup container element
+       */
+      onPageContentAvailable: function WikiTOCParser_onPageContentAvailable(layer, args)
+      {
+         var pageObj = args[1].pageObj;
+         if (pageObj.options.mode != "details" && pageObj.options.tocEnabled)
+         {
+            return this._insertToc(pageObj, args[1].textEl);
+         }
+      },
+
       /**
        * Parse the wiki page and insert a table of contents into the document.
        * 
        * <p>Unlike Alfresco.WikiParser.parse() this method uses the Dom to actually
        * insert the new content, rather than simply returning the modified markup
        * for later insertion.</p>
-       *
-       * @method parse
-       * @param page {Array} The wiki page instance
-       * @param text {String} The wiki page markup
-       */
-      parse: function WikiTOCParser_parse(page, text)
-      {
-         return this._insertToc(page, text);
-      },
-      
-      /**
-       * Add table of contents to the wiki page.
-       *
-       * @method parse
-       * @param text {String} The text to render
+       * 
+       * @method _insertToc
+       * @param pageObj {Alfresco.WikiPage} The wiki page instance
+       * @param textEl {HTMLElement} The wiki page markup container element
        * @private
        */
-      _insertToc: function WikiTOCParser__insertToc(page, textElement)
+      _insertToc: function WikiTOCParser__insertToc(pageObj, textEl)
       {
          var tocContent = "";
          var hCounts = [0, 0, 0, 0, 0, 0, 0];
@@ -79,7 +87,7 @@
          var hdrElems = Dom.getElementsBy(function(el) {
             return el.nodeName == "H1" || el.nodeName == "H2" || el.nodeName == "H3" || 
                el.nodeName == "H4" || el.nodeName == "H5" || el.nodeName == "H6";
-         }, null, textElement);
+         }, null, textEl);
          
          if (hdrElems.length >= this.options.tocMinHeadings)
          {
@@ -149,7 +157,7 @@
                Dom.addClass(toggleLink, "theme-color-1");
                Dom.setAttribute(toggleLink, "href", "#");
                
-               tocTitleDiv.innerHTML = "<h2>" + page.msg("label.tocHeader") + "</h2>";
+               tocTitleDiv.innerHTML = "<h2>" + pageObj.msg("label.tocHeader") + "</h2>";
                tocContentDiv.innerHTML = tc;
                
                Event.addListener(toggleLink, "click", function(e) {
@@ -158,15 +166,15 @@
                   if (Dom.getStyle(content, "display") == "none")
                   {
                      Dom.setStyle(content, "display", "block");
-                     this.innerHTML = "[" + page.msg("label.tocHide") + "]";
+                     this.innerHTML = "[" + pageObj.msg("label.tocHide") + "]";
                   }
                   else
                   {
                      Dom.setStyle(content, "display", "none");
-                     this.innerHTML = "[" + page.msg("label.tocShow") + "]";
+                     this.innerHTML = "[" + pageObj.msg("label.tocShow") + "]";
                   }
                });
-               toggleLink.innerHTML = "[" + page.msg("label.tocHide") + "]";
+               toggleLink.innerHTML = "[" + pageObj.msg("label.tocHide") + "]";
                toggleSpan.appendChild(toggleLink);
 
                Dom.getFirstChild(tocTitleDiv).appendChild(toggleSpan); // Append into h2 elem
@@ -181,7 +189,7 @@
             var elems, n = 0;
             
             // Insert TOC before elements with toc-before class
-            elems = Dom.getElementsByClassName("toc-before", null, textElement);
+            elems = Dom.getElementsByClassName("toc-before", null, textEl);
             for (var i = 0; i < elems.length; i++)
             {
                Dom.insertBefore(generateTocDiv(tocContent), elems[i]);
@@ -189,7 +197,7 @@
             }
             
             // Insert TOC after elements with toc-after class
-            elems = Dom.getElementsByClassName("toc-after", null, textElement);
+            elems = Dom.getElementsByClassName("toc-after", null, textEl);
             for (var i = 0; i < elems.length; i++)
             {
                var sib = Dom.getNextSibling(elems[i]);
@@ -204,11 +212,11 @@
             // See http://meta.wikimedia.org/wiki/MediaWiki_FAQ#How_do_I_add_a_table_of_contents.3F
             elems = Dom.getElementsBy(function(el) {
                return YAHOO.lang.trim(el.innerHTML).replace(/<br ?\/?>/, "") == "__TOC__"
-            }, "p", textElement);
+            }, "p", textEl);
             for (var i = 0; i < elems.length; i++)
             {
                Dom.insertAfter(generateTocDiv(tocContent), elems[i]);
-               textElement.removeChild(elems[i]);
+               textEl.removeChild(elems[i]);
                n ++;
             }
             
@@ -216,11 +224,11 @@
             // Warning: this is not fully tested
             elems = Dom.getElementsBy(function(el) {
                return el.nodeName == "WIKI:TOC"
-            }, null, textElement);
+            }, null, textEl);
             for (var i = 0; i < elems.length; i++)
             {
                Dom.insertAfter(generateTocDiv(tocContent), elems[i]);
-               textElement.removeChild(elems[i]);
+               textEl.removeChild(elems[i]);
                n ++;
             }
             
@@ -228,7 +236,7 @@
             if (n == 0)
             {
                // Insert before first heading
-               var hnodes = Selector.query("h1, h2, h3, h4, h5, h6", textElement);
+               var hnodes = Selector.query("h1, h2, h3, h4, h5, h6", textEl);
                if (hnodes != null)
                {
                   Dom.insertBefore(generateTocDiv(tocContent), hnodes[0]);

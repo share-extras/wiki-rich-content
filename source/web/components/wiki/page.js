@@ -49,9 +49,12 @@
    {
       Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator"]);
       this.selectedTags = [];
+      // Core markup parser
       this.parsers.parser = new Alfresco.WikiParser();
+      // Optional parsers, to be fired via Bubbling
       this.parsers.tocParser = new Alfresco.WikiTOCParser();
       this.parsers.tableParser = new Alfresco.WikiTableParser();
+      this.parsers.prettyprintParser = new Alfresco.WikiPrettyprintParser();
       return this;
    };
 
@@ -93,28 +96,12 @@
       parsers:
       {
          /**
-          * An instance of a Wiki parser for this page.
+          * The core Wiki parser for this page.
           * 
           * @property parser
           * @type Alfresco.WikiParser
           */
-         parser: null,
-         
-         /**
-          * An instance of a Wiki TOC parser for this page.
-          * 
-          * @property tocParser
-          * @type Alfresco.WikiTOCParser
-          */
-         tocParser: null,
-         
-         /**
-          * An instance of a Wiki table parser for this page.
-          * 
-          * @property tableParser
-          * @type Alfresco.WikiTableParser
-          */
-         tableParser: null
+         parser: null
       },
       
       /**
@@ -253,37 +240,16 @@
          var pageText = Dom.get(this.id + "-page");
          if (pageText)
          {
+            // Format any wiki markup using built-in parser
             this.parsers.parser.URL = this._getAbsolutePath();
-            // Format any wiki markup
             pageText.innerHTML = this.parsers.parser.parse(pageText.innerHTML, this.options.pages);
             
-            // insert TOC, if enabled
-            if (this.options.mode != "details" && this.options.tocEnabled)
+            // Fire event to inform any listening plugins that the content is ready
+            YAHOO.Bubbling.fire("pageContentAvailable",
             {
-               this.parsers.tocParser.parse(this, pageText);
-            }
-
-            // Turn tables into DataSources
-            if (this.options.mode != "details" && this.options.convertTables)
-            {
-               this.parsers.tableParser.parse(this, pageText);
-            }
-            
-            // Enable prettyprint, if available
-            if (typeof(prettyPrint) == "function")
-            {
-               var pElems = pageText.getElementsByTagName("pre");
-               for ( var i = 0; i < pElems.length; i++)
-               {
-                  Dom.addClass(pElems[i], "prettyprint");
-               }
-               var cElems = pageText.getElementsByTagName("code");
-               for ( var i = 0; i < cElems.length; i++)
-               {
-                  Dom.addClass(cElems[i], "prettyprint");
-               }
-               prettyPrint();
-            }
+               pageObj: this,
+               textEl: pageText
+            });
          }
          
          // Fire permissions event to allow other components to update their UI accordingly

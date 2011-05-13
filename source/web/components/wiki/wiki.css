@@ -230,6 +230,8 @@ table.versionHistory
 
 .wiki-page .rich-content,.wiki .rich-content
 {
+	/* Comment out the following line to make the page
+	take up the full screen width */
    max-width: 60em;
    color: #333333;
    line-height: 1.5em;
