@@ -8,6 +8,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/toc-parser.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/table-parser.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/prettyprint-parser.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/components/wiki/video-parser.js"></@script>
 <!-- Wiki Editor -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/simple-editor.css" />
 <@script type="text/javascript" src="${page.url.context}/res/modules/simple-editor.js"></@script>

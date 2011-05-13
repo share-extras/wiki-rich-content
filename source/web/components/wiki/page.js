@@ -52,9 +52,10 @@
       // Core markup parser
       this.parsers.parser = new Alfresco.WikiParser();
       // Optional parsers, to be fired via Bubbling
-      this.parsers.tocParser = new Alfresco.WikiTOCParser();
-      this.parsers.tableParser = new Alfresco.WikiTableParser();
-      this.parsers.prettyprintParser = new Alfresco.WikiPrettyprintParser();
+      //this.parsers.tocParser = new Alfresco.WikiTOCParser();
+      //this.parsers.tableParser = new Alfresco.WikiTableParser();
+      //this.parsers.prettyprintParser = new Alfresco.WikiPrettyprintParser();
+      this.parsers.videoParser = new Alfresco.WikiVideoParser();
       return this;
    };
 
