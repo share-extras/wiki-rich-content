@@ -47,7 +47,7 @@
     */
    Alfresco.WikiPage = function(htmlId)
    {
-      Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator"]);
+      Alfresco.WikiPage.superclass.constructor.call(this, "Alfresco.WikiPage", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator", "uploader"]);
       this.selectedTags = [];
       // Core markup parser
       this.parsers.parser = new Alfresco.WikiParser();
@@ -56,6 +56,7 @@
       //this.parsers.tableParser = new Alfresco.WikiTableParser();
       //this.parsers.prettyprintParser = new Alfresco.WikiPrettyprintParser();
       this.parsers.videoParser = new Alfresco.WikiVideoParser();
+      this.parsers.documentParser = new Alfresco.WikiDocumentParser();
       return this;
    };
 

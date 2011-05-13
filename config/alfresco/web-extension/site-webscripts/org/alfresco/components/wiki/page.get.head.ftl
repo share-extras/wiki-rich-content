@@ -9,6 +9,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/table-parser.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/prettyprint-parser.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/components/wiki/video-parser.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/components/wiki/document-parser.js"></@script>
 <!-- Wiki Editor -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/simple-editor.css" />
 <@script type="text/javascript" src="${page.url.context}/res/modules/simple-editor.js"></@script>
@@ -21,3 +22,7 @@
 <!-- Google Code Prettify -->
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/modules/prettify/prettify.css" />
 <@script type="text/javascript" src="${page.url.context}/res/modules/prettify/prettify.js"></@script>
+<!-- Document Previews -->
+<@script type="text/javascript" src="${page.url.context}/res/components/preview/web-preview.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/js/flash/extMouseWheel.js"></@script>
+<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/preview/web-preview.css" />
