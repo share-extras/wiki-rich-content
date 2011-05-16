@@ -74,9 +74,9 @@
             textEl = args[1].textEl, 
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embedUrl, embed, embedContainer,
-            docRe = /^\/share\/page\/site\/(\w+)\/document-details\?nodeRef=(\w+:\/\/\w+\/[-\w]+)/,
+            docRe = new RegExp(Alfresco.constants.URL_PAGECONTEXT.replace("/", "\\/", "g") + 
+                  "site\\/(\\w+)\\/document-details\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
             docMatch;
-         
          for (var i = 0; i < linkEls.length; i++)
          {
             embed = null;
