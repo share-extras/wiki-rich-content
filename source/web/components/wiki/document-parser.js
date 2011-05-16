@@ -110,38 +110,79 @@
                   // Load the list of columns for this data type
                   Alfresco.util.Ajax.jsonGet(
                   {
-                     // http://localhost:8080/share/proxy/alfresco/slingshot/doclib/node/workspace/SpacesStore/93270cb6-d617-4c04-9e92-e7961c2fb539
                      url: Alfresco.constants.PROXY_URI + "slingshot/doclib/node/" + docMatch[2].replace("://", "/"),
                      successCallback:
                      {
-                        fn: function WikiDocumentParser__createFromHTML_success(p_response)
+                        fn: function WikiDocumentParser__createFromHTML_success(p_response, p_obj)
                         {
-                           new Alfresco.WebPreview(elId).setOptions(
-                                 {
-                                    nodeRef: p_response.json.item.nodeRef,
-                                    name: "",
-                                    icon: "/components/images/generic-file-32.png",
-                                    mimeType: p_response.json.item.mimetype,
-                                    previews: ["doclib", "webpreview", "avatar", "medium", "imgpreview"],
-                                    size: p_response.json.item.size
-                                 }).setMessages(
+                           // TODO Send a request to the server to determine what previews are available
+                           // TODO Define some global messages
+                     
+                           if (p_response.json.item.mimetype.indexOf("video/") == 0 && 
+                                 typeof(Alfresco.VideoPreview) != "undefined")
+                           {
+                              Dom.setStyle(p_response.config.object.swfDivEl, "height", "400px");
+                              new Alfresco.VideoPreview(p_response.config.object.elId).setOptions(
+                              {
+                                 nodeRef: p_response.json.item.nodeRef,
+                                 name: p_response.json.item.fileName,
+                                 icon: "/components/images/generic-file-32.png",
+                                 mimeType: p_response.json.item.mimetype,
+                                 previews: [ "h264preview", "imgpreview", "imgpreviewfull" ],
+                                 availablePreviews: [ "h264preview", "imgpreview", "imgpreviewfull" ],
+                                 size: p_response.json.item.size
+                              }).setMessages(
                                     {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
-                              );
+                                    //Alfresco.messages.scope["org/alfresco/components/preview/web-preview.get"]
+                               );
+                           }
+                           else if (p_response.json.item.mimetype.indexOf("audio/") == 0 && 
+                                 typeof(Alfresco.AudioPreview) != "undefined")
+                           {
+                              Dom.setStyle(p_response.config.object.swfDivEl, "height", "100px");
+                              new Alfresco.AudioPreview(p_response.config.object.elId).setOptions(
+                              {
+                                 nodeRef: p_response.json.item.nodeRef,
+                                 name: p_response.json.item.fileName,
+                                 icon: "/components/images/generic-file-32.png",
+                                 mimeType: p_response.json.item.mimetype,
+                                 previews: [ ],
+                                 availablePreviews: [ ],
+                                 size: p_response.json.item.size
+                              }).setMessages(
+                                    {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
+                                    //Alfresco.messages.scope["org/alfresco/components/preview/web-preview.get"]
+                               );
+                           }
+                           else
+                           {
+                              new Alfresco.WebPreview(p_response.config.object.elId).setOptions(
+                                    {
+                                       nodeRef: p_response.json.item.nodeRef,
+                                       name: p_response.json.item.fileName,
+                                       icon: "/components/images/generic-file-32.png",
+                                       mimeType: p_response.json.item.mimetype,
+                                       previews: ["doclib", "webpreview", "avatar", "medium", "imgpreview"],
+                                       size: p_response.json.item.size
+                                    }).setMessages(
+                                       {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
+                                 );
+                           }
                            
+                           /*
                            YAHOO.Bubbling.fire("documentDetailsAvailable", {
                               documentDetails: p_response.json.item
                            });
+                           */
                         },
                         scope: this
                      },
-                     failureCallback:
-                     {
-                        fn: function WikiDocumentParser__createFromHTML_failure(p_response) {
-                           alert("failed to load document details for " + docMatch[2]);
-                        },
-                        scope: this
-                     },
+                     failureMessage: "Failed to load document details for " + docMatch[2],
                      scope: this,
+                     object: {
+                        elId: elId,
+                        swfDivEl: swfDivEl
+                     },
                      noReloadOnAuthFailure: true
                   });
                   

@@ -26,3 +26,7 @@
 <@script type="text/javascript" src="${page.url.context}/res/components/preview/web-preview.js"></@script>
 <@script type="text/javascript" src="${page.url.context}/res/js/flash/extMouseWheel.js"></@script>
 <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/preview/web-preview.css" />
+<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/preview/audio-preview.css" />
+<@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/preview/video-preview.css" />
+<@script type="text/javascript" src="${page.url.context}/res/components/preview/video-preview.js"></@script>
+<@script type="text/javascript" src="${page.url.context}/res/components/preview/audio-preview.js"></@script>
