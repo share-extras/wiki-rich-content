@@ -79,10 +79,10 @@
        */
       _insertToc: function WikiTOCParser__insertToc(pageObj, textEl)
       {
-         var tocContent = "";
+         var tocData = {}, tocContent = "";
          var hCounts = [0, 0, 0, 0, 0, 0, 0];
-         var anames = [];
-         var currLevel = 0;
+         var anames = [], minLevel = 6;
+         var currLevel = 0, i, hdrElem, hdrLevel, hdrText, tocItem;
          
          var hdrElems = Dom.getElementsBy(function(el) {
             return el.nodeName == "H1" || el.nodeName == "H2" || el.nodeName == "H3" || 
@@ -91,23 +91,28 @@
          
          if (hdrElems.length >= this.options.tocMinHeadings)
          {
-            for (var i = 0; i < hdrElems.length; i++)
+            tocData.items = [];
+            
+            // Iterate through each heading element, collect information needed to build the TOC
+            // and add anchor elements
+            for (i = 0; i < hdrElems.length; i++)
             {
-               var hdrElem = hdrElems[i],
+               hdrElem = hdrElems[i],
                   hdrLevel = parseInt(hdrElem.nodeName.substring(1, 2), 10),
                   hdrText = YAHOO.lang.trim(hdrElem.textContent||hdrElem.innerText);
-
-               // Increment counters
-               hCounts[hdrLevel] ++;
-               hCounts[0] ++;
                
-               var aname = this._tocAnchorName(hdrText, anames);
+               if (hdrLevel < minLevel)
+               {
+                  minLevel = hdrLevel;
+               }
 
-               // Add to TOC
-               for (var j=currLevel; j<hdrLevel; j++) tocContent += "\n<ul>\n<li class=\"toc-" + (j + 1) + "\">";
-               for (var j=currLevel; j>hdrLevel; j--) tocContent += "\n</li>\n</ul>";
-               if (currLevel == hdrLevel) tocContent += "</li>\n<li class=\"toc-" + hdrLevel + "\">";
-               tocContent += "<a href=\"#" + aname + "\">" + this._tocItemNum(hdrLevel, hCounts) + " " + hdrText + "</a>";
+               var aname = this._tocAnchorName(hdrText, anames);
+               
+               tocData.items.push({
+                  "level": hdrLevel,
+                  "text": hdrText,
+                  "name": aname
+               });
 
                // Add <a name=""> elems in the page text plus whatever came before the match
                hdrElem.innerHTML = "<a name=\"" + aname + "\"></a>" + hdrElem.innerHTML.replace(/<br ?\/?>/, "");
@@ -121,6 +126,35 @@
                Event.addListener(hdrElem, "mouseout", function(e) {
                   Dom.setStyle(Dom.getLastChild(this), "visibility", "hidden")
                });
+            }
+            
+            // Check the lowest level heading, if it is not H1 then we need to move the
+            // numbers along
+            if (minLevel > 1)
+            {
+               for (i = 0; i < tocData.items.length; i++)
+               {
+                  tocData.items[i].level -= minLevel - 1;
+               }
+            }
+            
+            // Generate the TOC HTML
+            for (i = 0; i < tocData.items.length; i++)
+            {
+               tocItem = tocData.items[i], 
+                  hdrLevel = tocItem.level,
+                  hdrText = tocItem.text, 
+                  hdrName = tocItem.name;
+               
+               // Increment counters
+               hCounts[hdrLevel] ++;
+               hCounts[0] ++;
+               
+               // Add to TOC
+               for (var j=currLevel; j<hdrLevel; j++) tocContent += "\n<ul>\n<li class=\"toc-" + (j + 1) + "\">";
+               for (var j=currLevel; j>hdrLevel; j--) tocContent += "\n</li>\n</ul>";
+               if (currLevel == hdrLevel) tocContent += "</li>\n<li class=\"toc-" + hdrLevel + "\">";
+               tocContent += "<a href=\"#" + hdrName + "\">" + this._tocItemNum(hdrLevel, hCounts) + " " + hdrText + "</a>";
                
                // Cache last header level
                currLevel = hdrLevel;
@@ -132,7 +166,7 @@
                }
             }
 
-            // Complete wiki TOC
+            // Complete TOC HTML
             for (var i=currLevel; i>1; i--)
             {
                tocContent += "\n</ul>";
