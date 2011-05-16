@@ -105,6 +105,7 @@
             }
             else if (Dom.getAttribute(els[i], "class"))
             {
+               dlName = null;
                classes = Dom.getAttribute(els[i], "class").split(" ");
                for (var j = 0; j < classes.length; j++)
                {
@@ -130,15 +131,18 @@
          // TODO Add a wrapper around the table for style control, plus allow toggling?
          // TODO Detect the styles on each column heading cell to control parsing, sorting, etc.
          // TODO Support paging if number of rows is greater than a limit
-         // TODO Allow a Data List GUID to be specified somehow?
+         // TODO Support filtering on data list items
          
          for (var i = 0; i < tEls.length; i++)
          {
+            // TinyMCE sometimes adds tables as child elems of paragraphs
+            this._removeFromParagraphEls(tEls[i])
             this._createFromHTML(tEls[i]);
          }
          
          for (var i = 0; i < dltEls.length; i++)
          {
+            this._removeFromParagraphEls(dltEls[i].element)
             this._createFromDL(dltEls[i].element, dltEls[i].dlName, pageObj.options.siteId);
          }
          
@@ -216,6 +220,31 @@
       },
 
       /**
+       * Remove the given element from any ancestor paragraph tags, if any are found.
+       * 
+       * <p>If the given element lies inside a paragraph element on the page, then setting
+       * the innerHTML of its TH cells on IE will fail, unless the table is first removed
+       * from the paragraph block.</p>
+       * 
+       * <p>This is because P can only contain in-line elements according to the HTML spec,
+       * so IE fails to modify the inner DOM contents if this condition is breached.</p>
+       * 
+       * @method _removeFromParagraphEls
+       * @param tEl {object}   HTML element from the Dom
+       * @return null
+       * @private
+       */
+      _removeFromParagraphEls: function WikiTableParser__removeFromParagraphEls(tEl)
+      {
+         var pEl = Dom.getAncestorByTagName(tEl, "p");
+         while (pEl != null)
+         {
+            Dom.insertBefore(tEl, pEl);
+            pEl = Dom.getAncestorByTagName(tEl, "p");
+         }
+      },
+
+      /**
        * Modify the specified table, using data from the first row within a thead
        * element. Convert any td elements in this first row to th elements.
        * 
@@ -239,15 +268,12 @@
          {
             tdEl = hdrs[0];
             thEl = document.createElement("TH");
-            thEl.innerHTML = tdEl.innerHTML;
-            Dom.insertAfter(thEl, tdEl);
-            rows[0].removeChild(tdEl);
-            // TODO Can we just call parentNode.replaceChild(newChild, oldChild) instead?
+            thEl.innerHTML = YAHOO.lang.trim(tdEl.textContent||tdEl.innerText);
+            rows[0].replaceChild(thEl, tdEl);
          }
          // Add first row to a thead and the rest to a tbody
          theadEl = document.createElement("THEAD");
          theadEl.appendChild(rows[0]);
-         //tEl.appendChild(theadEl);
          Dom.insertBefore(theadEl, tEl.firstChild);
       },
 
@@ -289,7 +315,10 @@
          dtEl = this._createContainerDiv(tEl);
          
          // Create THEAD element
-         this._insertHeadEl(tEl);
+         if (tEl.getElementsByTagName("THEAD").length == 0)
+         {
+            this._insertHeadEl(tEl);
+         }
          
          /*
          if (tEl.getElementsByTagName("tbody").length > 0)
@@ -309,22 +338,24 @@
          
          // Get the column names from the first row
          rows = tEl.getElementsByTagName("tr");
-         cols = [];
+         cols = [], fields = [];
          hdrs = rows[0].getElementsByTagName("th");
          for (j = 0; j < hdrs.length; j++)
          {
-            hd = YAHOO.lang.trim(hdrs[j].textContent||hdrs[j].innerText);
-            hdrs[j].innerHTML = hd; // Remove HTML from the column
-            cols.push({ key: hd, sortable: true, parser: this._myParser, formatter: this._myRenderer });
+            hd = hdrs[j].innerHTML;
+            //hdrs[j].innerHTML = hd; // Remove HTML from the column
+            fields.push({ "key": hd.toLowerCase() });
+            cols.push({ "key": hd.toLowerCase(), "label": hd, "sortable": true, "parser": this._myParser, "formatter": this._myRenderer });
          }
          
          // Create the DataSource - this will remove all data from the table and populate the DS
          ds = new YAHOO.util.DataSource(tEl);
          ds.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
          ds.responseSchema = {
-            fields: cols
+            "fields": fields
          };
-         dt = new YAHOO.widget.DataTable(dtEl, cols, ds);
+         
+         return new YAHOO.widget.DataTable(dtEl, cols, ds);
       },
 
       /**
@@ -373,7 +404,10 @@
          dtEl = this._createContainerDiv(tEl);
          
          // Create THEAD element
-         this._insertHeadEl(tEl);
+         if (tEl.getElementsByTagName("THEAD").length == 0)
+         {
+            this._insertHeadEl(tEl);
+         }
          
          var successHandler = function WikiTableParser__createFromHTML_successHandler(sRequest, oResponse, oPayload)
          {
