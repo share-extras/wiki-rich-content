@@ -101,6 +101,9 @@
                }
                if (embedUrl != null)
                {
+                  // Remove target="embed" from the link
+                  Dom.setAttribute(linkEl, "target", "_self");
+                  // Construct the embed element
                   embed = document.createElement("IFRAME");
                   Dom.setAttribute(embed, "title", YAHOO.lang.trim(linkEl.textContent||linkEl.innerText));
                   Dom.setAttribute(embed, "width", "560");
@@ -109,11 +112,15 @@
                   Dom.setAttribute(embed, "frameborder", "0");
                   Dom.setAttribute(embed, "allowfullscreen", "allowfullscreen");
                }
-               Dom.setAttribute(linkEl, "target", "_self");
             }
             if (embed != null)
             {
-               Dom.insertBefore(embed, linkEl.parentNode);
+               embedContainer = Dom.getAncestorByTagName(linkEl, "p");
+               if (embedContainer == null)
+               {
+                  embedContainer = linkEl.parentNode;
+               }
+               Dom.insertBefore(embed, embedContainer);
             }
          }
       }

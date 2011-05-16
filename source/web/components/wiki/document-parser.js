@@ -73,7 +73,7 @@
          var pageObj = args[1].pageObj, 
             textEl = args[1].textEl, 
             linkEls = textEl.getElementsByTagName("a"), 
-            linkEl, link, embedUrl, embed,
+            linkEl, link, embedUrl, embed, embedContainer,
             docRe = /^\/share\/page\/site\/(\w+)\/document-details\?nodeRef=(\w+:\/\/\w+\/[-\w]+)/,
             docMatch;
          
@@ -146,13 +146,18 @@
                   });
                   
                   embed = previewEl;
+                  // Remove target="embed" from the link
+                  Dom.setAttribute(linkEl, "target", "_self");
                }
-               Dom.setAttribute(linkEl, "target", "_self");
             }
             if (embed != null)
             {
-               Dom.insertBefore(embed, linkEl.parentNode);
-               //linkEl.parentNode.replaceChild(embed, linkEl);
+               embedContainer = Dom.getAncestorByTagName(linkEl, "p");
+               if (embedContainer == null)
+               {
+                  embedContainer = linkEl.parentNode;
+               }
+               Dom.insertBefore(embed, embedContainer);
             }
          }
       }
