@@ -74,9 +74,10 @@
             textEl = args[1].textEl, 
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embedUrl, embed,
-            ytRe = /^http:\/\/www\.youtube\.com\/watch\?v=([\w]+)/,
-            vimeoRe = /^http:\/\/vimeo\.com\/([\d]+)/,
-            ytMatch, vimeoMatch;
+            ytRe = /^http:\/\/www\.youtube\.com\/watch\?v=([\w]+)/, // YouTube regular URLs
+            ytbeRe = /^http:\/\/youtu\.be\/([\w]+)/, // YouTube short URLs
+            vimeoRe = /^http:\/\/vimeo\.com\/([\d]+)/, // Vimeo regular URLs
+            ytMatch, ytbeMatch, vimeoMatch;
          
          for (var i = 0; i < linkEls.length; i++)
          {
@@ -85,10 +86,21 @@
             if (Dom.getAttribute(linkEl, "target") == this.options.embedTarget && Dom.getAttribute(linkEl, "href") != null)
             {
                link = Dom.getAttribute(linkEl, "href");
-               ytMatch = ytRe.exec(link), vimeoMatch = vimeoRe.exec(link);
+               ytMatch = ytRe.exec(link), ytbeMatch = ytbeRe.exec(link), vimeoMatch = vimeoRe.exec(link);
                if (ytMatch)
                {
                   embedUrl = "http://www.youtube.com/embed/" + ytMatch[1];
+               }
+               else if (ytbeMatch)
+               {
+                  embedUrl = "http://www.youtube.com/embed/" + ytbeMatch[1];
+               }
+               else if (vimeoMatch)
+               {
+                  embedUrl = "http://player.vimeo.com/video/" + vimeoMatch[1] + "?title=1&byline=1&portrait=0";
+               }
+               if (embedUrl != null)
+               {
                   embed = document.createElement("IFRAME");
                   Dom.setAttribute(embed, "title", YAHOO.lang.trim(linkEl.textContent||linkEl.innerText));
                   Dom.setAttribute(embed, "width", "560");
@@ -96,16 +108,6 @@
                   Dom.setAttribute(embed, "src", embedUrl);
                   Dom.setAttribute(embed, "frameborder", "0");
                   Dom.setAttribute(embed, "allowfullscreen", "allowfullscreen");
-               }
-               else if (vimeoMatch)
-               {
-                  embedUrl = "http://player.vimeo.com/video/" + vimeoMatch[1] + "?title=1&byline=1&portrait=0";
-                  embed = document.createElement("IFRAME");
-                  Dom.setAttribute(embed, "title", YAHOO.lang.trim(linkEl.textContent||linkEl.innerText));
-                  Dom.setAttribute(embed, "width", "560");
-                  Dom.setAttribute(embed, "height", "349");
-                  Dom.setAttribute(embed, "src", embedUrl);
-                  Dom.setAttribute(embed, "frameborder", "0");
                }
             }
             if (embed != null)
