@@ -264,8 +264,8 @@
       {
          var dtEl, tId, dtId;
          
-         tId = Dom.generateId(tEl, "-wiki-table");
-         dtId = tId.replace("-wiki-table", "-wiki-dt");
+         tId = Dom.generateId(tEl, "wiki-table-");
+         dtId = tId.replace("wiki-table-", "wiki-dt-");
          dtEl = document.createElement("DIV");
          Dom.setAttribute(dtEl, "id", dtId);
          Dom.insertAfter(dtEl, tEl);
