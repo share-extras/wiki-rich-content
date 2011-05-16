@@ -109,6 +109,7 @@
                   Dom.setAttribute(embed, "frameborder", "0");
                   Dom.setAttribute(embed, "allowfullscreen", "allowfullscreen");
                }
+               Dom.setAttribute(linkEl, "target", "_self");
             }
             if (embed != null)
             {

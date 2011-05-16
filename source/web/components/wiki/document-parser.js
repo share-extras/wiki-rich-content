@@ -147,6 +147,7 @@
                   
                   embed = previewEl;
                }
+               Dom.setAttribute(linkEl, "target", "_self");
             }
             if (embed != null)
             {
