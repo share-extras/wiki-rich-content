@@ -103,6 +103,7 @@
                   var previewEl = document.createElement("DIV");
                   var swfDivEl = document.createElement("DIV");
                   var msgEl = document.createElement("DIV");
+                  Dom.addClass(previewEl, "wiki-doc-preview");
                   var elId = Dom.generateId(previewEl, "docpreview-");
                   Dom.insertAfter(previewEl, linkEl);
                   var titleTextEl = document.createElement("SPAN");

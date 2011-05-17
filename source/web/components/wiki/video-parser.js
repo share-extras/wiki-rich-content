@@ -123,6 +123,7 @@
                   Dom.setAttribute(embed, "src", embedUrl);
                   Dom.setAttribute(embed, "frameborder", "0");
                   Dom.setAttribute(embed, "allowfullscreen", "allowfullscreen");
+                  Dom.addClass(embed, "wiki-video-preview");
                }
             }
             if (embed != null)

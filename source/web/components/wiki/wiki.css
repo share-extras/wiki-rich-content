@@ -373,3 +373,12 @@ table.versionHistory
    font-size: 0.9em;
    font-weight: 400;
 }
+
+/* Document and video previews */
+
+.wiki-page .wiki-doc-preview, 
+.wiki-page .wiki-video-preview, 
+.wiki-page .wiki-datatable
+{
+	margin: 0.5em 0;
+}

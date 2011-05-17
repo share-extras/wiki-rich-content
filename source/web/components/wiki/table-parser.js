@@ -294,6 +294,7 @@
          dtId = tId.replace("wiki-table-", "wiki-dt-");
          dtEl = document.createElement("DIV");
          Dom.setAttribute(dtEl, "id", dtId);
+         Dom.addClass(dtEl, "wiki-datatable");
          Dom.insertAfter(dtEl, tEl);
          dtEl.appendChild(tEl); // Make table a child
          return dtEl;
