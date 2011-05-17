@@ -84,7 +84,7 @@
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embedUrl, embed, embedContainer,
             includeLink,
-            docRe = new RegExp("\\/document-details\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
+            docRe = new RegExp("\\/document-details\\/?\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
             docMatch, nodeRef;
          for (var i = 0; i < linkEls.length; i++)
          {
