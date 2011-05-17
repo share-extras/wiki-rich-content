@@ -52,13 +52,22 @@
       options:
       {
          /**
-          * Target name to look for on links to replace with embedded videos
+          * Target name to look for on links to add embedded videos alongside
           *
           * @property embedTarget
           * @type String
-          * @default "vembed"
+          * @default "embed"
           */
-         embedTarget: "embed"
+         embedTarget: "embed",
+
+         /**
+          * Target name to look for on links to replace with embedded videos
+          *
+          * @property embedTargetNoLink
+          * @type String
+          * @default "embednolink"
+          */
+         embedTargetNoLink: "embednolink"
       },
       
       /**
@@ -74,24 +83,28 @@
             textEl = args[1].textEl, 
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embedUrl, embed, embedContainer,
-            docRe = new RegExp(Alfresco.constants.URL_PAGECONTEXT.replace("/", "\\/", "g") + 
-                  "site\\/(\\w+)\\/document-details\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
-            docMatch;
+            includeLink,
+            docRe = new RegExp("\\/document-details\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
+            docMatch, nodeRef;
          for (var i = 0; i < linkEls.length; i++)
          {
             embed = null;
             linkEl = linkEls[i];
-            if (Dom.getAttribute(linkEl, "target") == this.options.embedTarget && Dom.getAttribute(linkEl, "href") != null)
+            if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
+                  && Dom.getAttribute(linkEl, "href") != null)
             {
+               includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget;
                link = Dom.getAttribute(linkEl, "href");
                docMatch = docRe.exec(link);
                if (docMatch)
                {
+                  nodeRef = docMatch[1];
+                  
                   var previewEl = document.createElement("DIV");
                   var swfDivEl = document.createElement("DIV");
                   var msgEl = document.createElement("DIV");
                   var elId = Dom.generateId(previewEl, "docpreview-");
-                  Dom.insertBefore(previewEl, linkEl);
+                  Dom.insertAfter(previewEl, linkEl);
                   var titleTextEl = document.createElement("SPAN");
                   var titleImgEl = document.createElement("IMG");
                   Dom.setAttribute(titleTextEl, "id", elId + "-title-span");
@@ -110,7 +123,7 @@
                   // Load the list of columns for this data type
                   Alfresco.util.Ajax.jsonGet(
                   {
-                     url: Alfresco.constants.PROXY_URI + "slingshot/doclib/node/" + docMatch[2].replace("://", "/"),
+                     url: Alfresco.constants.PROXY_URI + "slingshot/doclib/node/" + nodeRef.replace("://", "/"),
                      successCallback:
                      {
                         fn: function WikiDocumentParser__createFromHTML_success(p_response, p_obj)
@@ -134,7 +147,7 @@
                               }).setMessages(
                                     {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
                                     //Alfresco.messages.scope["org/alfresco/components/preview/web-preview.get"]
-                               );
+                              );
                            }
                            else if (p_response.json.item.mimetype.indexOf("audio/") == 0 && 
                                  typeof(Alfresco.AudioPreview) != "undefined")
@@ -152,21 +165,21 @@
                               }).setMessages(
                                     {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
                                     //Alfresco.messages.scope["org/alfresco/components/preview/web-preview.get"]
-                               );
+                              );
                            }
                            else
                            {
                               new Alfresco.WebPreview(p_response.config.object.elId).setOptions(
-                                    {
-                                       nodeRef: p_response.json.item.nodeRef,
-                                       name: p_response.json.item.fileName,
-                                       icon: "/components/images/generic-file-32.png",
-                                       mimeType: p_response.json.item.mimetype,
-                                       previews: ["doclib", "webpreview", "avatar", "medium", "imgpreview"],
-                                       size: p_response.json.item.size
-                                    }).setMessages(
-                                       {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
-                                 );
+                              {
+                                 nodeRef: p_response.json.item.nodeRef,
+                                 name: p_response.json.item.fileName,
+                                 icon: "/components/images/generic-file-32.png",
+                                 mimeType: p_response.json.item.mimetype,
+                                 previews: ["doclib", "webpreview", "avatar", "medium", "imgpreview"],
+                                 size: p_response.json.item.size
+                              }).setMessages(
+                                    {"preview.fullwindow": "Maximize", "error.error": "The content cannot be displayed due to an unknown error.", "error.content": "The content cannot be displayed because it is not of type png, jpg, gif or swf.", "preview.fullscreen": "Fullscreen", "label.noPreview": "This document can't be previewed.<br\/><a class=\"theme-color-1\" href=\"{0}\">Click here to download it.<\/a>", "preview.fitWidth": "Fit Width", "preview.pageOf": "of", "error.io": "The preview could not be loaded from the server. ", "label.noContent": "This document has no content.", "preview.fitHeight": "Fit Height", "preview.fullwindowEscape": "Press Esc to exit full window mode", "label.preparingPreviewer": "Preparing previewer...", "label.noFlash": "To view the preview please download the latest Flash Player from the<br\/><a href=\"http:\/\/www.adobe.com\/go\/getflashplayer\">Adobe Flash Player Download Center<\/a>.", "preview.fitPage": "Fit Page", "preview.page": "Page", "preview.actualSize": "Actual Size"}
+                              );
                            }
                            
                            /*
@@ -177,7 +190,7 @@
                         },
                         scope: this
                      },
-                     failureMessage: "Failed to load document details for " + docMatch[2],
+                     failureMessage: "Failed to load document details for " + nodeRef,
                      scope: this,
                      object: {
                         elId: elId,
@@ -189,6 +202,13 @@
                   embed = previewEl;
                   // Remove target="embed" from the link
                   Dom.setAttribute(linkEl, "target", "_self");
+                  // Fix link href as TinyMCE can corrupt these
+                  if (link.indexOf("http://document-details") == 0)
+                  {
+                     link = window.location.toString().substring(0, window.location.toString().indexOf("wiki-page")) +
+                        "document-details?nodeRef=" + nodeRef;
+                     Dom.setAttribute(linkEl, "href", link);
+                  }
                }
             }
             if (embed != null)
@@ -198,7 +218,11 @@
                {
                   embedContainer = linkEl.parentNode;
                }
-               Dom.insertBefore(embed, embedContainer);
+               Dom.insertAfter(embed, embedContainer);
+               if (!includeLink)
+               {
+                  Dom.addClass(embedContainer, "hidden");
+               }
             }
          }
       }

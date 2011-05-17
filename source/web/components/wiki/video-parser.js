@@ -51,14 +51,23 @@
        */
       options:
       {
-         /**
-          * Target name to look for on links to replace with embedded videos
-          *
-          * @property embedTarget
-          * @type String
-          * @default "vembed"
-          */
-         embedTarget: "embed"
+      /**
+       * Target name to look for on links to add embedded videos alongside
+       *
+       * @property embedTarget
+       * @type String
+       * @default "embed"
+       */
+      embedTarget: "embed",
+
+      /**
+       * Target name to look for on links to replace with embedded videos
+       *
+       * @property embedTargetNoLink
+       * @type String
+       * @default "embednolink"
+       */
+      embedTargetNoLink: "embednolink"
       },
       
       /**
@@ -73,7 +82,8 @@
          var pageObj = args[1].pageObj, 
             textEl = args[1].textEl, 
             linkEls = textEl.getElementsByTagName("a"), 
-            linkEl, link, embedUrl, embed,
+            linkEl, link, embedUrl, embed, embedContainer,
+            includeLink,
             ytRe = /^http:\/\/www\.youtube\.com\/watch\?v=([\w]+)/, // YouTube regular URLs
             ytbeRe = /^http:\/\/youtu\.be\/([\w]+)/, // YouTube short URLs
             vimeoRe = /^http:\/\/vimeo\.com\/([\d]+)/, // Vimeo regular URLs
@@ -83,8 +93,10 @@
          {
             embed = null;
             linkEl = linkEls[i];
-            if (Dom.getAttribute(linkEl, "target") == this.options.embedTarget && Dom.getAttribute(linkEl, "href") != null)
+            if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
+                  && Dom.getAttribute(linkEl, "href") != null)
             {
+               includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget;
                link = Dom.getAttribute(linkEl, "href");
                ytMatch = ytRe.exec(link), ytbeMatch = ytbeRe.exec(link), vimeoMatch = vimeoRe.exec(link);
                if (ytMatch)
@@ -120,7 +132,11 @@
                {
                   embedContainer = linkEl.parentNode;
                }
-               Dom.insertBefore(embed, embedContainer);
+               Dom.insertAfter(embed, embedContainer);
+               if (!includeLink)
+               {
+                  Dom.addClass(embedContainer, "hidden");
+               }
             }
          }
       }
