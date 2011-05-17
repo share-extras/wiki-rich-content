@@ -382,3 +382,11 @@ table.versionHistory
 {
 	margin: 0.5em 0;
 }
+
+.wiki-page .wiki-doc-preview
+{
+   border-left: 1px solid #666666;
+   border-right: 1px solid #666666;
+   border-bottom: 1px solid #666666;
+   width: 600px;
+}
