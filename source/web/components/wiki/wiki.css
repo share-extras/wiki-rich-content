@@ -389,4 +389,6 @@ table.versionHistory
    border-right: 1px solid #666666;
    border-bottom: 1px solid #666666;
    width: 600px;
+   height: 600px;
+   overflow: hidden;
 }
