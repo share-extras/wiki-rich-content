@@ -401,7 +401,7 @@
             theme_advanced_resizing: true,
             siteId: this.options.siteId,
             language: this.options.locale,
-            theme_advanced_link_targets: "Embed preview with link=embed,Embed preview with no link=embednolink"
+            theme_advanced_link_targets: this.msg("tinymce.linkTargets.embed") + "=embed," + this.msg("tinymce.linkTargets.embedNoLink") + "=embednolink"
          });
          this.pageEditor.addPageUnloadBehaviour(this.msg("message.unsavedChanges.wiki"));
          this.pageEditor.render();
