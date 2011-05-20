@@ -288,14 +288,17 @@
        */
       _createContainerDiv: function WikiTableParser__createContainerDiv(tEl)
       {
-         var dtEl, tId, dtId;
+         var dtEl, tId, dtId, containerEl;
          
          tId = Dom.generateId(tEl, "wiki-table-");
          dtId = tId.replace("wiki-table-", "wiki-dt-");
+         containerEl = document.createElement("DIV");
          dtEl = document.createElement("DIV");
          Dom.setAttribute(dtEl, "id", dtId);
-         Dom.addClass(dtEl, "wiki-datatable");
-         Dom.insertAfter(dtEl, tEl);
+         Dom.addClass(containerEl, "wiki-datatable");
+         Dom.addClass(dtEl, "wiki-datatable-body");
+         Dom.insertAfter(containerEl, tEl);
+         containerEl.appendChild(dtEl);
          dtEl.appendChild(tEl); // Make table a child
          return dtEl;
       },
@@ -320,22 +323,6 @@
          {
             this._insertHeadEl(tEl);
          }
-         
-         /*
-         if (tEl.getElementsByTagName("tbody").length > 0)
-         {
-            tBodyEl = tEl.getElementsByTagName("tbody")[0];
-         }
-         else
-         {
-            tBodyEl = document.createElement("TBODY");
-         }
-         for (j = 1; rows.length > 0; j++)
-         {
-            tBodyEl.appendChild(rows[0]);
-         }
-         */
-         //tEl.appendChild(tBodyEl);
          
          // Get the column names from the first row
          rows = tEl.getElementsByTagName("tr");
@@ -399,7 +386,8 @@
        */
       _createFromDL: function WikiTableParser__createFromHTML(tEl, dlName, siteId)
       {
-         var dtEl, fields, cols, tCols, dlCols, rows, hdrs, hd, ds, dt, j, dlNodeRef, dlType, dataRequestFields = [];
+         var dtEl, dthEl, fields, cols, tCols, dlCols, rows, hdrs, hd, ds, dt, j, dlNodeRef, dlType, dlTitle, dlDesc,
+            dataRequestFields = [];
          
          // Create container element around the table
          dtEl = this._createContainerDiv(tEl);
@@ -452,6 +440,8 @@
                      {
                         dlNodeRef = lists[i].nodeRef;
                         dlType = lists[i].itemType;
+                        dlTitle = lists[i].title;
+                        dlDesc = lists[i].description;
                      }
                   }
                   
@@ -542,13 +532,21 @@
                                  failure: failureHandler,
                                  scope: dt
                               });
+                              
+                              // Insert DT header
+                              dthEl = document.createElement("div");
+                              Dom.addClass(dthEl, "wiki-datalist-hd");
+                              Dom.insertBefore(dthEl, dtEl);
+                              dthEl.innerHTML = "<div class=\"wiki-datalist-title\"><a href=\"data-lists?list=" + dlName + 
+                                 "\">" + dlTitle + "</a></div>";
+                              dthEl.innerHTML += "<div class=\"wiki-datalist-description\">" + dlDesc + "</div>";
                            },
                            scope: this
                         },
                         failureCallback:
                         {
                            fn: function WikiTableParser__createFromHTML_failure(p_response) {
-                              alert("failed to load columns");
+                              Alfresco.util.displayPrompt("Failed to load columns");
                            },
                            scope: this
                         },
@@ -558,13 +556,13 @@
                   }
                   else
                   {
-                     alert("could not find data list " + dlName)
+                     Alfresco.util.displayPrompt("Could not find data list " + dlName)
                   }
                },
                failureCallback:
                {
                   fn: function WikiTableParser__createFromHTML_failure(p_response) {
-                     alert("failed to load data lists");
+                     Alfresco.util.displayPrompt("Failed to load data lists");
                   },
                   scope: this
                },
