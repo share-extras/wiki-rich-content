@@ -71,7 +71,8 @@
       onPageContentAvailable: function WikiTableParser_onPageContentAvailable(layer, args)
       {
          var pageObj = args[1].pageObj;
-         if (pageObj.options.mode != "details" && pageObj.options.convertTables)
+         if (pageObj.options == null || (pageObj.options.mode != "details" && 
+               pageObj.options.convertTables !== false))
          {
             return this._convertTables(pageObj, args[1].textEl);
          }

@@ -59,7 +59,8 @@
       onPageContentAvailable: function WikiTOCParser_onPageContentAvailable(layer, args)
       {
          var pageObj = args[1].pageObj;
-         if (pageObj.options.mode != "details" && pageObj.options.tocEnabled)
+         if (pageObj.options == null || (pageObj.options.mode != "details" && 
+               pageObj.options.tocEnabled !== false))
          {
             return this._insertToc(pageObj, args[1].textEl);
          }
