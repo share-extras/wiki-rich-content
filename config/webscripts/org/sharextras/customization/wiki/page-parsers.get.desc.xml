@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>Wiki page parsers</shortname>
+    <description>Initialise client-side parsing for wiki pages</description>
+    <url>/extras/components/wiki/page-parsers</url>
+</webscript>

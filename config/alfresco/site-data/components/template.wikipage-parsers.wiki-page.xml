@@ -1,0 +1,6 @@
+<component>
+    <region-id>wikipage-parsers</region-id>
+    <source-id>wiki-page</source-id>
+    <scope>template</scope>
+    <uri>/extras/components/wiki/page-parsers</uri>
+</component>

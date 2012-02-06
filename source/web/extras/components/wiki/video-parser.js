@@ -144,4 +144,6 @@
       
    };
    
+   //new Alfresco.WikiVideoParser();
+   
 })();

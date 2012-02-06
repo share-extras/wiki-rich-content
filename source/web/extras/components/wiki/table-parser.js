@@ -574,4 +574,6 @@
       }
    };
    
+   //new Alfresco.WikiTableParser();
+   
 })();

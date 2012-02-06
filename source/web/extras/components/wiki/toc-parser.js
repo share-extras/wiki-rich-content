@@ -361,4 +361,6 @@
       
    };
    
+   //new Alfresco.WikiTOCParser();
+   
 })();

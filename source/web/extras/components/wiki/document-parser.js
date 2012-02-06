@@ -1,18 +1,18 @@
 /**
- * Parser that converts links to YouTube or Vimeo videos into embedded videos within the page itself.
+ * Parser that converts document links to embedded document previews within the page.
  * 
- * <p>The parser looks for anchor elements in the code with a href attribute that points to a video
- * page on either YouTube or Vimeo. This means that the link target must begin with the following<p>
+ * <p>The parser looks for link elements in the page that point to a document details page,
+ * and which are tagged with the target or class attribute values <tt>embed</tt> for an 
+ * in-line preview, placed before the link, or <tt>embednolink</tt> for an in-line preview
+ * replacing the link.<p>
  * 
- * <ul>
- * <li>http://www.youtube.com/watch?v=id</li>
- * <li>http://vimo.com/id</li>
- * </ul>
+ * <p>To make the process more user-friendly, it is possible to add the link targets to the 
+ * add/edit hyperlink pop-up in TinyMCE. This requires the following configuration attribute
+ * to be added in the editor config which is (unfortunately) hard-coded inside the 
+ * Alfresco.WikiPage.prototype._setupEditForm method in the client-side 
+ * components/wiki/page.js file.</p>
  * 
- * <p>The YouTube ID must be alphanumeric (A-Z, a-z and 0-9) while Vimeo IDs should be numerical only.
- * Other parameters may follow the IDs on the URL, they will be ignored.</p>
- * 
- * <p>The parser could be extended in the future to support other video sites.</p>
+ * <code>theme_advanced_link_targets: this.msg("tinymce.linkTargets.embed") + "=embed," + this.msg("tinymce.linkTargets.embedNoLink") + "=embednolink"</code>
  * 
  * @namespace Alfresco
  * @class Alfresco.WikiDocumentParser
@@ -251,5 +251,7 @@
       }
       
    };
+   
+   //new Alfresco.WikiDocumentParser();
    
 })();

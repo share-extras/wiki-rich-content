@@ -1,0 +1,42 @@
+/* TOC */
+/* TODO: Add support for .details-page-content class in details view */
+
+.wiki-toc {
+    margin: 0.5em 0;
+    padding: 0.5em 0;
+    background: #f6f6f6;
+    border: 1px solid #cccccc;
+    width: auto;
+    float: left;
+}
+.wiki-toc .toc-title
+{
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+.wiki-toc .toc-title h2
+{
+    font-size: 1em;
+    font-weight: 700;
+    margin: 0 0 0 0;
+    padding: 0 1em;
+    display: inline;
+}
+.wiki-page .wiki-toc ul li, .wiki .wiki-toc ul li
+{
+    list-style-type: none;
+}
+.wiki-page .break, .wiki .break
+{
+    clear: both;
+}
+.wiki-page .section-anchor
+{
+   color: #999999;
+}
+.wiki-page .toc-toggle
+{
+   padding-left: 0.5em;
+   font-size: 0.9em;
+   font-weight: 400;
+}

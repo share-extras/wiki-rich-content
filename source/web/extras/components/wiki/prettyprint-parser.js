@@ -96,4 +96,6 @@
       
    };
    
+   //new Alfresco.WikiPrettyprintParser();
+   
 })();

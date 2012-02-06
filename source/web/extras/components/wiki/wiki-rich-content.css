@@ -1,0 +1,160 @@
+/* Visual appearance customisations */
+
+.wiki-page .rich-content,.wiki .rich-content
+{
+    /* Comment out the following line to make the page
+    take up the full screen width */
+   max-width: 60em;
+   color: #333333;
+   line-height: 1.5em;
+}
+.wiki-page .rich-content a, .wiki .rich-content a
+{
+   color: #6CA5CE;
+}
+.wiki-page .rich-content .nav, .wiki .rich-content .nav
+{
+    width: 100%;
+}
+.wiki-page .rich-content .pullout, .wiki .rich-content .pullout
+{
+    margin: 0.5em 0;
+    padding: 1em;
+    background: #f0f0f0;
+    border: 1px solid #cccccc;
+}
+.wiki-page .rich-content h1, .wiki .rich-content h1
+{
+    margin: 1em 0 0 0;
+    padding: 0 0 0.25em 0;
+    border-bottom: 1px solid #cccccc;
+}
+.wiki-page .rich-content h2, .wiki .rich-content h2
+{
+    padding-top: 1em;
+    
+}
+.wiki-page .rich-content h3, .wiki-page .rich-content h4, 
+.wiki-page .rich-content h5, .wiki-page .rich-content h6,
+.wiki .rich-content h3, .wiki .rich-content h4, 
+.wiki .rich-content h5, .wiki .rich-content h6
+{
+    padding-top: 1em;
+}
+.wiki-page .rich-content h1 a, .wiki-page .rich-content h2 a, 
+.wiki-page .rich-content h3 a, .wiki-page .rich-content h4 a, 
+.wiki-page .rich-content h5 a, .wiki-page .rich-content h6 a,
+.wiki .rich-content h1 a, .wiki .rich-content h2 a, 
+.wiki .rich-content h3 a, .wiki .rich-content h4 a, 
+.wiki .rich-content h5 a, .wiki .rich-content h6 a
+{
+    color: #333333;
+}
+.wiki-page .rich-content h1 a:hover, .wiki-page .rich-content h2 a:hover, 
+.wiki-page .rich-content h3 a:hover, .wiki-page .rich-content h4 a:hover, 
+.wiki-page .rich-content h5 a:hover, .wiki-page .rich-content h6 a:hover,
+.wiki .rich-content h1 a:hover, .wiki .rich-content h2 a:hover, 
+.wiki .rich-content h3 a:hover, .wiki .rich-content h4 a:hover, 
+.wiki .rich-content h5 a:hover, .wiki .rich-content h6 a:hover
+{
+    color: #333333;
+    text-decoration: none;
+}
+.wiki-page .rich-content ul, .wiki-page .rich-content ol,
+.wiki .rich-content ul, .wiki .rich-content ol
+{
+    padding: 0 1em;
+}
+.wiki-page .rich-content p + ul, .wiki .rich-content p + ul
+{
+    padding-top: 1em;
+}
+.wiki-page .rich-content h1 + ul, .wiki .rich-content h1 + ul,
+.wiki-page .rich-content h2 + ul, .wiki .rich-content h2 + ul,
+.wiki-page .rich-content h3 + ul, .wiki .rich-content h3 + ul,
+.wiki-page .rich-content h4 + ul, .wiki .rich-content h4 + ul,
+.wiki-page .rich-content h5 + ul, .wiki .rich-content h5 + ul,
+.wiki-page .rich-content h6 + ul, .wiki .rich-content h6 + ul,
+.wiki-page .rich-content h1 + ol, .wiki .rich-content h1 + ol,
+.wiki-page .rich-content h2 + ol, .wiki .rich-content h2 + ol,
+.wiki-page .rich-content h3 + ol, .wiki .rich-content h3 + ol,
+.wiki-page .rich-content h4 + ol, .wiki .rich-content h4 + ol,
+.wiki-page .rich-content h5 + ol, .wiki .rich-content h5 + ol,
+.wiki-page .rich-content h6 + ol, .wiki .rich-content h6 + ol
+{
+    padding-top: 1em;
+}
+.wiki-page .rich-content ul li, .wiki .rich-content ul li
+{
+    list-style-type: square;
+}
+.wiki-page .rich-content pre,
+.wiki-page .rich-content code,
+.wiki .rich-content pre,
+.wiki .rich-content code
+{
+    font-size: 1.1em;
+    line-height: 1.5em;
+    border: 1px solid #cccccc;
+    padding: 1em;
+    margin: 0.5em 0;
+    background-color: #f0f0f0;
+    overflow: auto;
+    max-height: 30em;
+}
+
+/* Document and video previews */
+
+.wiki-page .wiki-doc-preview, 
+.wiki-page .wiki-video-preview, 
+.wiki-page .wiki-audio-preview, 
+.wiki-page .wiki-datatable
+{
+    margin: 0.5em 0;
+}
+
+.wiki-page .wiki-doc-preview,
+.wiki-page .wiki-video-preview,
+.wiki-page .wiki-audio-preview
+{
+   overflow: hidden;
+}
+
+.wiki-page div.wiki-doc-preview
+{
+   border-left: 1px solid #666666;
+   border-right: 1px solid #666666;
+   border-bottom: 1px solid #666666;
+   width: 600px;
+   height: 600px;
+}
+
+.wiki-page div.wiki-video-preview
+{
+   border-left: 1px solid #666666;
+   border-right: 1px solid #666666;
+   border-bottom: 1px solid #666666;
+   width: 600px;
+   height: 400px;
+}
+
+.wiki-page div.wiki-audio-preview
+{
+   width: 600px;
+   height: 100px;
+}
+
+/* Data lists */
+
+.wiki-datalist-title
+{
+    font-weight: 700;
+}
+.wiki-datalist-hd
+{
+   padding-bottom: 0.5em;
+}
+.wiki-datalist-description
+{
+   color: #666666;
+}
