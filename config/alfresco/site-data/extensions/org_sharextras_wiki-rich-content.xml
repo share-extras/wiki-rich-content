@@ -55,6 +55,7 @@
                 <customization>
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
                     <dependencies>
+                        <css>/res/extras/components/wiki/table-parser.css</css>
                         <js>/res/extras/components/wiki/table-parser.js</js>
                     </dependencies>
                 </customization>
@@ -68,6 +69,7 @@
                 <customization>
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
                     <dependencies>
+                        <css>/res/extras/components/wiki/prettyprint-parser.css</css>
                         <js>/res/extras/components/wiki/prettyprint-parser.js</js>
                         <js>/res/extras/modules/prettify/prettify.js</js>
                         <css>/res/extras/modules/prettify/prettify.css</css>
@@ -83,6 +85,7 @@
                 <customization>
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
                     <dependencies>
+                        <css>/res/extras/components/wiki/video-parser.css</css>
                         <js>/res/extras/components/wiki/video-parser.js</js>
                     </dependencies>
                 </customization>
