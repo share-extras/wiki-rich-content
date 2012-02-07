@@ -93,10 +93,10 @@
          {
             embed = null;
             linkEl = linkEls[i];
-            if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
+            if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.hasClass(linkEl, this.options.embedTarget) || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
                   && Dom.getAttribute(linkEl, "href") != null)
             {
-               includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget;
+               includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.hasClass(linkEl, this.options.embedTarget);
                link = Dom.getAttribute(linkEl, "href");
                ytMatch = ytRe.exec(link), ytbeMatch = ytbeRe.exec(link), vimeoMatch = vimeoRe.exec(link);
                if (ytMatch)
