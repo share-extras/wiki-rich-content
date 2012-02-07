@@ -64,7 +64,7 @@
         
         <!-- Prettyprint -->
         <module>
-            <id>Wiki Rich Content Code Formatting</id>
+            <id>Wiki Rich Content google-code-prettify Formatting</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
