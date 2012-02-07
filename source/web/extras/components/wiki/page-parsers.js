@@ -76,6 +76,11 @@ if (typeof Extras == "undefined" || !Extras)
       {
           new Alfresco.WikiVideoParser();
       }
+      
+      YAHOO.Bubbling.on("userAccess", function() {
+          this._parse();
+      }, this);
+      
       return this;
    };
 
@@ -178,6 +183,23 @@ if (typeof Extras == "undefined" || !Extras)
        * @method onReady
        */
       onReady: function WikiPageParsers_onReady()
+      {
+          /*
+           * Do nothing. We cannot make changes to the DOM here because the built-in page
+           * text parser in page.js re-populates the innerHTML, which wipes out any 
+           * listeners we have added using Event.addListener()
+           * 
+           * Fortunately, page.js fires a Bubbling event immediately after it has finished
+           * the parsing, so instead we take advantage of this.
+           */
+      },
+
+      /**
+       * Parse the wiki page content
+       *
+       * @method _parse
+       */
+      _parse: function WikiPageParsers__parse()
       {
          if (this.options.mode === "edit")
          {
