@@ -22,13 +22,6 @@
                         <js>/res/extras/components/wiki/page-parsers.js</js>
                     </dependencies>
                 </customization>
-                <!-- Not actually present -->
-                <!--
-                <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <sourcePackageRoot>org.sharextras.customization.wiki</sourcePackageRoot> 
-                </customization>
-                -->
             </customizations>
             <auto-deploy>true</auto-deploy>
         </module>
@@ -98,7 +91,6 @@
         </module>
         
         <!-- Document embeds -->
-        <!--
         <module>
             <id>Wiki Rich Content Document Embeds</id>
             <customizations>
@@ -106,15 +98,33 @@
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
                     <dependencies>
                         <js>/res/extras/components/wiki/document-parser.js</js>
+                        <!-- Alfresco.WebPreview  -->
                         <js>/res/components/preview/web-preview.js</js>
                         <css>/res/components/preview/web-preview.css</css>
+                        <!-- Alfresco.WebPreview.Plugins -->
+                        <!-- Alfresco.WebPreviewer.Plugins.WebPreviewer -->
+                        <css>/res/components/preview/WebPreviewerHTML.css</css>
+                        <js>/res/components/preview/WebPreviewer.js</js>
                         <js>/res/js/flash/extMouseWheel.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.FlashFox -->
+                        <js>/res/components/preview/FlashFox.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.StrobeMediaPlayback -->
+                        <js>/res/components/preview/StrobeMediaPlayback.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.Video -->
+                        <js>/res/components/preview/Video.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.Audio -->
+                        <css>/res/components/preview/Audio.css</css>
+                        <js>/res/components/preview/Audio.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.Flash -->
+                        <js>/res/components/preview/Flash.js</js>
+                        <!-- Alfresco.WebPreviewer.Plugins.Image -->
+                        <css>/res/components/preview/Image.css</css>
+                        <js>/res/components/preview/Image.js</js>
                     </dependencies>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
         </module>
-        -->
         
     </modules>
 </extension>

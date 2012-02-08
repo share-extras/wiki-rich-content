@@ -76,6 +76,10 @@ if (typeof Extras == "undefined" || !Extras)
       {
           new Alfresco.WikiVideoParser();
       }
+      if (typeof Alfresco.WikiDocumentParser == "function")
+      {
+          new Alfresco.WikiDocumentParser();
+      }
       
       YAHOO.Bubbling.on("userAccess", function() {
           this._parse();

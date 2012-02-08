@@ -67,7 +67,9 @@
           * @type String
           * @default "embednolink"
           */
-         embedTargetNoLink: "embednolink"
+         embedTargetNoLink: "embednolink",
+         
+         pluginConditions: [{"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/mp4"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "StrobeMediaPlayback"}, {"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "FlashFox"}, {"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "Video"}]}, {"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/m4v"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "StrobeMediaPlayback"}, {"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "FlashFox"}, {"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "Video"}]}, {"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/x-flv"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "StrobeMediaPlayback"}, {"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "FlashFox"}]}, {"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/quicktime"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "StrobeMediaPlayback"}]}, {"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/ogg"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "Video"}]}, {"attributes": {"thumbnail": "imgpreview", "mimeType": "video\/webm"}, "plugins": [{"attributes": {"poster": "imgpreview", "posterFileSuffix": ".png"}, "name": "Video"}]}, {"attributes": {"mimeType": "video\/mp4"}, "plugins": [{"attributes": {}, "name": "StrobeMediaPlayback"}, {"attributes": {}, "name": "FlashFox"}, {"attributes": {}, "name": "Video"}]}, {"attributes": {"mimeType": "video\/x-m4v"}, "plugins": [{"attributes": {}, "name": "StrobeMediaPlayback"}, {"attributes": {}, "name": "FlashFox"}, {"attributes": {}, "name": "Video"}]}, {"attributes": {"mimeType": "video\/x-flv"}, "plugins": [{"attributes": {}, "name": "StrobeMediaPlayback"}, {"attributes": {}, "name": "FlashFox"}]}, {"attributes": {"mimeType": "video\/quicktime"}, "plugins": [{"attributes": {}, "name": "StrobeMediaPlayback"}]}, {"attributes": {"mimeType": "video\/ogg"}, "plugins": [{"attributes": {}, "name": "Video"}]}, {"attributes": {"mimeType": "video\/webm"}, "plugins": [{"attributes": {}, "name": "Video"}]}, {"attributes": {"mimeType": "audio\/mpeg"}, "plugins": [{"attributes": {}, "name": "StrobeMediaPlayback"}, {"attributes": {}, "name": "FlashFox"}, {"attributes": {}, "name": "Audio"}]}, {"attributes": {"mimeType": "audio\/x-wav"}, "plugins": [{"attributes": {}, "name": "Audio"}]}, {"attributes": {"thumbnail": "webpreview"}, "plugins": [{"attributes": {"paging": "true", "src": "webpreview"}, "name": "WebPreviewer"}]}, {"attributes": {"thumbnail": "imgpreview"}, "plugins": [{"attributes": {"src": "imgpreview"}, "name": "Image"}]}, {"attributes": {"mimeType": "image\/jpeg"}, "plugins": [{"attributes": {"srcMaxSize": "500000"}, "name": "Image"}]}, {"attributes": {"mimeType": "image\/png"}, "plugins": [{"attributes": {"srcMaxSize": "500000"}, "name": "Image"}]}, {"attributes": {"mimeType": "image\/gif"}, "plugins": [{"attributes": {"srcMaxSize": "500000"}, "name": "Image"}]}, {"attributes": {"mimeType": "application\/x-shockwave-flash"}, "plugins": [{"attributes": {}, "name": "Flash"}]}]
       },
       
       /**
@@ -100,25 +102,22 @@
                {
                   nodeRef = docMatch[1];
                   
-                  var previewEl = document.createElement("DIV");
-                  var swfDivEl = document.createElement("DIV");
-                  var msgEl = document.createElement("DIV");
-                  var elId = Dom.generateId(previewEl, "docpreview-");
-                  Dom.insertAfter(previewEl, linkEl);
-                  var titleTextEl = document.createElement("SPAN");
-                  var titleImgEl = document.createElement("IMG");
-                  Dom.setAttribute(titleTextEl, "id", elId + "-title-span");
-                  Dom.setAttribute(titleImgEl, "id", elId + "-title-img");
-                  Dom.setAttribute(swfDivEl, "id", elId + "-shadow-swf-div");
-                  Dom.setAttribute(msgEl, "id", elId + "-swfPlayerMessage-div");
-                  Dom.setStyle(swfDivEl, "width", "600px");
-                  Dom.setStyle(swfDivEl, "height", "600px");
-                  Dom.addClass(titleTextEl, "hidden");
-                  Dom.addClass(titleImgEl, "hidden");
-                  previewEl.appendChild(titleTextEl);
-                  previewEl.appendChild(titleImgEl);
-                  previewEl.appendChild(swfDivEl);
-                  previewEl.appendChild(msgEl);
+                  // 4.0 style - much simpler
+                  var previewEl = document.createElement("DIV"), // container element
+                     bdEl = document.createElement("DIV"), // body element
+                     pEl = document.createElement("DIV"), // previewer element
+                     msgEl = document.createElement("DIV"), // message element
+                     elId = Dom.generateId(previewEl, "preview-");
+
+                  msgEl.innerHTML = "Preparing preview..."; // optional
+                  Dom.addClass(msgEl, "message"); // optional
+                  pEl.appendChild(msgEl); // optional
+                  Dom.setAttribute(pEl, "id", elId + "-previewer-div");
+                  Dom.addClass(pEl, "previewer");
+                  bdEl.appendChild(pEl);
+                  Dom.setAttribute(bdEl, "id", elId + "-body");
+                  Dom.addClass(bdEl, "web-preview");
+                  previewEl.appendChild(bdEl);
 
                   // Load the list of columns for this data type
                   Alfresco.util.Ajax.jsonGet(
@@ -131,78 +130,38 @@
                            var nodeRef = p_response.json.item.nodeRef,
                               fileName = p_response.json.item.fileName,
                               mimetype = p_response.json.item.mimetype,
-                              size = p_response.json.item.size,
-                              icon = "/components/images/generic-file-32.png";
+                              size = p_response.json.item.size;
                            
                            // TODO Define some global messages
-                     
-                           if (mimetype.indexOf("video/") == 0 && 
-                                 typeof(Alfresco.VideoPreview) != "undefined")
-                           {
-                              Dom.setStyle(p_response.config.object.swfDivEl, "height", "400px");
-                              Dom.addClass(p_response.config.object.previewEl, "wiki-video-preview");
-                              new Alfresco.VideoPreview(p_response.config.object.elId).setOptions(
-                              {
-                                 nodeRef: nodeRef,
-                                 name: fileName,
-                                 icon: icon,
-                                 mimeType: mimetype,
-                                 size: size
-                              }).setMessages(
-                                    Alfresco.messages.scope["Alfresco.WikiPage"]
-                              );
-                           }
-                           else if (mimetype.indexOf("audio/") == 0 && 
-                                 typeof(Alfresco.AudioPreview) != "undefined")
-                           { 
-                              Dom.setStyle(p_response.config.object.swfDivEl, "height", "100px");
-                              Dom.addClass(p_response.config.object.previewEl, "wiki-audio-preview");
-                              new Alfresco.AudioPreview(p_response.config.object.elId).setOptions(
-                              {
-                                 nodeRef: nodeRef,
-                                 name: fileName,
-                                 icon: icon,
-                                 mimeType: mimetype,
-                                 size: size
-                              }).setMessages(
-                                    Alfresco.messages.scope["Alfresco.WikiPage"]
-                              );
-                           }
-                           else
-                           {
-                              /*
-                               * The web preview component can't retrieve the list of previews itself,
-                               * so we need to do this for it.
-                               */
-                               Alfresco.util.Ajax.jsonGet(
+                           /*
+                            * The web preview component can't retrieve the list of previews itself,
+                            * so we need to do this for it.
+                            */
+                            Alfresco.util.Ajax.jsonGet(
+                            {
+                               url: Alfresco.constants.PROXY_URI + "api/node/" + nodeRef.replace(":/", "") + "/content/thumbnaildefinitions",
+                               successCallback:
                                {
-                                  url: Alfresco.constants.PROXY_URI + "api/node/" + nodeRef.replace(":/", "") + "/content/thumbnaildefinitions",
-                                  successCallback:
+                                  fn: function WDP_onLoadThumbnailDefinitions(p_thmbResp, p_obj)
                                   {
-                                     fn: function WDP_onLoadThumbnailDefinitions(p_thmbResp, p_obj)
-                                     {
-                                         var previews = p_thmbResp.json;
-                                         Dom.addClass(p_response.config.object.previewEl, "wiki-doc-preview");
-                                         new Alfresco.WebPreview(p_response.config.object.elId).setOptions(
-                                         {
-                                            nodeRef: nodeRef,
-                                            name: fileName,
-                                            icon: icon,
-                                            mimeType: mimetype,
-                                            previews: previews,
-                                            size: size
-                                         }).setMessages(
-                                               Alfresco.messages.scope["Alfresco.WikiPage"]
-                                         );
-                                     },
-                                     scope: this,
-                                     obj:
-                                     {
-                                     }
+                                      var previews = p_thmbResp.json;
+                                      Dom.addClass(p_response.config.object.previewEl, "wiki-doc-preview");
+                                      new Alfresco.WebPreview(p_response.config.object.elId).setOptions(
+                                      {
+                                         nodeRef: nodeRef,
+                                         name: fileName,
+                                         mimeType: mimetype,
+                                         size: size,
+                                         thumbnails: previews,
+                                         pluginConditions: this.options.pluginConditions
+                                      }).setMessages(
+                                            Alfresco.messages.scope["Extras.WikiPageParsers"]
+                                      );
                                   },
-                                  failureMessage: "Could not load thumbnail definitions list"
-                              });
-                           }
+                                  scope: this
+                               },
+                               failureMessage: "Could not load thumbnail definitions list"
+                           });
                            
                            /*
                            YAHOO.Bubbling.fire("documentDetailsAvailable", {
@@ -216,7 +175,6 @@
                      scope: this,
                      object: {
                         elId: elId,
-                        swfDivEl: swfDivEl,
                         previewEl: previewEl
                      },
                      noReloadOnAuthFailure: true
