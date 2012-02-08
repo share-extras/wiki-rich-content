@@ -30,6 +30,7 @@
                 </customization>
                 -->
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Import individual client-side parsers -->
@@ -46,6 +47,7 @@
                     </dependencies>
                 </customization>
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- DataTables -->
@@ -60,6 +62,7 @@
                     </dependencies>
                 </customization>
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Prettyprint -->
@@ -76,6 +79,7 @@
                     </dependencies>
                 </customization>
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Video links -->
@@ -90,6 +94,7 @@
                     </dependencies>
                 </customization>
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Document embeds -->
@@ -107,6 +112,7 @@
                     </dependencies>
                 </customization>
             </customizations>
+            <auto-deploy>true</auto-deploy>
         </module>
         -->
         
