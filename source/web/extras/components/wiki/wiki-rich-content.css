@@ -25,7 +25,7 @@
 }
 .wiki-page .rich-content h1, .wiki .rich-content h1
 {
-    margin: 1em 0 0 0;
+    margin: 1em 0 0.5em 0;
     padding: 0 0 0.25em 0;
     border-bottom: 1px solid #cccccc;
 }
@@ -63,7 +63,7 @@
 .wiki-page .rich-content ul, .wiki-page .rich-content ol,
 .wiki .rich-content ul, .wiki .rich-content ol
 {
-    padding: 0 1em;
+    padding: 0 0 0 1em;
 }
 .wiki-page .rich-content p + ul, .wiki .rich-content p + ul
 {
@@ -86,7 +86,6 @@
 }
 .wiki-page .rich-content ul li, .wiki .rich-content ul li
 {
-    list-style-type: square;
 }
 .wiki-page .rich-content pre,
 .wiki-page .rich-content code,

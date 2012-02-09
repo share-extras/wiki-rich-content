@@ -98,6 +98,7 @@
                     <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
                     <dependencies>
                         <js>/res/extras/components/wiki/document-parser.js</js>
+                        <css>/res/extras/components/wiki/document-parser.css</css>
                         <!-- Alfresco.WebPreview  -->
                         <js>/res/components/preview/web-preview.js</js>
                         <css>/res/components/preview/web-preview.css</css>
