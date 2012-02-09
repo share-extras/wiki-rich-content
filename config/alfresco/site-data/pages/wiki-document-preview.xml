@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+   <title>Wiki Document Preview</title>
+   <description>Page which just contains the web preview component, for embedding in wiki pages</description>
+   <template-instance>wiki-document-preview</template-instance>
+   <authentication>user</authentication>
+</page>
