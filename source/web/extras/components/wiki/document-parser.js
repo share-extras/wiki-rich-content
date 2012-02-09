@@ -1,4 +1,32 @@
 /**
+ * Copyright (C) 20010-2011 Share Extras contributors
+ *
+ * This file is part of the Share Extras project.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+* Extras root namespace.
+* 
+* @namespace Extras
+*/
+if (typeof Extras == "undefined" || !Extras)
+{
+   var Extras = {};
+}
+
+/**
  * Parser that converts document links to embedded document previews within the page.
  * 
  * <p>The parser looks for link elements in the page that point to a document details page,
@@ -15,7 +43,7 @@
  * <code>theme_advanced_link_targets: this.msg("tinymce.linkTargets.embed") + "=embed," + this.msg("tinymce.linkTargets.embedNoLink") + "=embednolink"</code>
  * 
  * @namespace Alfresco
- * @class Alfresco.WikiDocumentParser
+ * @class Extras.WikiDocumentParser
  * @author Will Abson
  */
 (function()
@@ -28,10 +56,10 @@
    /**
     * WikiDocumentParser constructor.
     * 
-    * @return {Alfresco.WikiDocumentParser} The new parser instance
+    * @return {Extras.WikiDocumentParser} The new parser instance
     * @constructor
     */
-   Alfresco.WikiDocumentParser = function()
+   Extras.WikiDocumentParser = function()
    {
       /* Decoupled event listeners */
       YAHOO.Bubbling.on("pageContentAvailable", this.onPageContentAvailable, this);
@@ -39,7 +67,7 @@
       return this;
    };
 
-   Alfresco.WikiDocumentParser.prototype =
+   Extras.WikiDocumentParser.prototype =
    {
       /**
        * Object container for initialization options
@@ -173,6 +201,6 @@
       
    };
    
-   //new Alfresco.WikiDocumentParser();
+   //new Extras.WikiDocumentParser();
    
 })();

@@ -1,11 +1,39 @@
 /**
+ * Copyright (C) 20010-2011 Share Extras contributors
+ *
+ * This file is part of the Share Extras project.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+* Extras root namespace.
+* 
+* @namespace Extras
+*/
+if (typeof Extras == "undefined" || !Extras)
+{
+   var Extras = {};
+}
+
+/**
  * Parser that uses Google Code Prettify to <a href="http://en.wikipedia.org/wiki/Prettyprint">prettyprint</a> 
  * code blocks (<tt>&lt;pre&gt;</tt> and <tt>&lt;code&gt;</tt>) in a wiki page.
  * 
  * <p>Could be extended in the future to support other prettifiers, e.g. SyntaxHighlighter.</p>
  * 
  * @namespace Alfresco
- * @class Alfresco.WikiPrettyprintParser
+ * @class Extras.WikiPrettyprintParser
  * @author Will Abson
  */
 (function()
@@ -20,10 +48,10 @@
    /**
     * WikiPrettyprintParser constructor.
     * 
-    * @return {Alfresco.WikiPrettyprintParser} The new parser instance
+    * @return {Extras.WikiPrettyprintParser} The new parser instance
     * @constructor
     */
-   Alfresco.WikiPrettyprintParser = function()
+   Extras.WikiPrettyprintParser = function()
    {
       /* Decoupled event listeners */
       YAHOO.Bubbling.on("pageContentAvailable", this.onPageContentAvailable, this);
@@ -31,7 +59,7 @@
       return this;
    };
 
-   Alfresco.WikiPrettyprintParser.prototype =
+   Extras.WikiPrettyprintParser.prototype =
    {
       /**
        * Object container for initialization options
@@ -96,6 +124,6 @@
       
    };
    
-   //new Alfresco.WikiPrettyprintParser();
+   //new Extras.WikiPrettyprintParser();
    
 })();

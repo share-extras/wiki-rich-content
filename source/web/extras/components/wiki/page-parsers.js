@@ -1,7 +1,7 @@
 /**
- * Copyright (C) 20010-2011 Alfresco Share Extras project
+ * Copyright (C) 20010-2011 Share Extras contributors
  *
- * This file is part of the Alfresco Share Extras project.
+ * This file is part of the Share Extras project.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,29 +56,29 @@ if (typeof Extras == "undefined" || !Extras)
    {
       Extras.WikiPageParsers.superclass.constructor.call(this, "Extras.WikiPageParsers", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator", "uploader"]);
       // Optional parsers, to be fired via Bubbling
-      if (typeof Alfresco.WikiTOCParser == "function")
+      if (typeof Extras.WikiTOCParser == "function")
       {
-          new Alfresco.WikiTOCParser();
+          new Extras.WikiTOCParser();
       }
-      if (typeof Alfresco.WikiDocumentParser == "function")
+      if (typeof Extras.WikiDocumentParser == "function")
       {
-          new Alfresco.WikiDocumentParser();
+          new Extras.WikiDocumentParser();
       }
-      if (typeof Alfresco.WikiPrettyprintParser == "function")
+      if (typeof Extras.WikiPrettyprintParser == "function")
       {
-          new Alfresco.WikiPrettyprintParser();
+          new Extras.WikiPrettyprintParser();
       }
-      if (typeof Alfresco.WikiTableParser == "function")
+      if (typeof Extras.WikiTableParser == "function")
       {
-          new Alfresco.WikiTableParser();
+          new Extras.WikiTableParser();
       }
-      if (typeof Alfresco.WikiVideoParser == "function")
+      if (typeof Extras.WikiVideoParser == "function")
       {
-          new Alfresco.WikiVideoParser();
+          new Extras.WikiVideoParser();
       }
-      if (typeof Alfresco.WikiDocumentParser == "function")
+      if (typeof Extras.WikiDocumentParser == "function")
       {
-          new Alfresco.WikiDocumentParser();
+          new Extras.WikiDocumentParser();
       }
       
       YAHOO.Bubbling.on("userAccess", function() {
