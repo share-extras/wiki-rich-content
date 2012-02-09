@@ -306,6 +306,22 @@ if (typeof Extras == "undefined" || !Extras)
                }
             }
          }
+         
+         // Scroll to the correct location within the wiki page if there is a hash value on the URL
+         // We need to do this because the anchors are added after the Dom has loaded, so the browser does not scroll automatically
+         if (typeof window.location.hash == "string" && window.location.hash.length > 1)
+         {
+            var hash = window.location.hash.substring(1);
+            for (i = 0; i < anames.length; i++)
+            {
+               if (hash == anames[i])
+               {
+                  // Scroll to the corresponding header
+                  var region = Dom.getRegion(hdrElems[i]);
+                  window.scrollTo(0, region.top);
+               }
+            }
+         }
       },
       
       /**
