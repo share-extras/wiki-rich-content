@@ -1,5 +1,9 @@
 /* Data lists */
 
+.wiki-page .wiki-datatable
+{
+    margin: 0.5em 0;
+}
 .wiki-datalist-title
 {
     font-weight: 700;
