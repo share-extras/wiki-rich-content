@@ -55,32 +55,7 @@ if (typeof Extras == "undefined" || !Extras)
    Extras.WikiPageParsers = function(htmlId)
    {
       Extras.WikiPageParsers.superclass.constructor.call(this, "Extras.WikiPageParsers", htmlId, ["button", "container", "connection", "editor", "tabview", "datatable", "datasource", "paginator", "uploader"]);
-      // Optional parsers, to be fired via Bubbling
-      if (typeof Extras.WikiTOCParser == "function")
-      {
-          new Extras.WikiTOCParser();
-      }
-      if (typeof Extras.WikiDocumentParser == "function")
-      {
-          new Extras.WikiDocumentParser();
-      }
-      if (typeof Extras.WikiPrettyprintParser == "function")
-      {
-          new Extras.WikiPrettyprintParser();
-      }
-      if (typeof Extras.WikiTableParser == "function")
-      {
-          new Extras.WikiTableParser();
-      }
-      if (typeof Extras.WikiVideoParser == "function")
-      {
-          new Extras.WikiVideoParser();
-      }
-      if (typeof Extras.WikiDocumentParser == "function")
-      {
-          new Extras.WikiDocumentParser();
-      }
-      
+      // Custom parsers are fired via Bubbling
       YAHOO.Bubbling.on("userAccess", function() {
           this._parse();
       }, this);

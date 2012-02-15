@@ -13,15 +13,6 @@
                     <targetPackageRoot>org.alfresco</targetPackageRoot>
                     <sourcePackageRoot>org.sharextras.customization.wiki-rich-content</sourcePackageRoot>
                 </customization>
-                <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <!-- Additional CSS -->
-                        <css>/res/extras/components/wiki/wiki-rich-content.css</css>
-                        <!-- Custom page parsers -->
-                        <js>/res/extras/components/wiki/page-parsers.js</js>
-                    </dependencies>
-                </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
         </module>
@@ -33,11 +24,8 @@
             <id>Wiki Rich Content TOC</id>
             <customizations>
                 <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <css>/res/extras/components/wiki/toc-parser.css</css>
-                        <js>/res/extras/components/wiki/toc-parser.js</js>
-                    </dependencies>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-toc-parser</sourcePackageRoot>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
@@ -48,11 +36,8 @@
             <id>Wiki Rich Content Data Tables</id>
             <customizations>
                 <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <css>/res/extras/components/wiki/table-parser.css</css>
-                        <js>/res/extras/components/wiki/table-parser.js</js>
-                    </dependencies>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-table-parser</sourcePackageRoot>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
@@ -63,13 +48,8 @@
             <id>Wiki Rich Content google-code-prettify Formatting</id>
             <customizations>
                 <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <css>/res/extras/components/wiki/prettyprint-parser.css</css>
-                        <js>/res/extras/components/wiki/prettyprint-parser.js</js>
-                        <js>/res/extras/modules/prettify/prettify.js</js>
-                        <css>/res/extras/modules/prettify/prettify.css</css>
-                    </dependencies>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-prettyprint-parser</sourcePackageRoot>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
@@ -80,11 +60,8 @@
             <id>Wiki Rich Content Video Embeds</id>
             <customizations>
                 <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <css>/res/extras/components/wiki/video-parser.css</css>
-                        <js>/res/extras/components/wiki/video-parser.js</js>
-                    </dependencies>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-video-parser</sourcePackageRoot>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>
@@ -95,33 +72,8 @@
             <id>Wiki Rich Content Document Embeds</id>
             <customizations>
                 <customization>
-                    <targetPackageRoot>org.alfresco.components.wiki</targetPackageRoot>
-                    <dependencies>
-                        <js>/res/extras/components/wiki/document-parser.js</js>
-                        <css>/res/extras/components/wiki/document-parser.css</css>
-                        <!-- Alfresco.WebPreview  -->
-                        <js>/res/components/preview/web-preview.js</js>
-                        <css>/res/components/preview/web-preview.css</css>
-                        <!-- Alfresco.WebPreview.Plugins -->
-                        <!-- Alfresco.WebPreviewer.Plugins.WebPreviewer -->
-                        <css>/res/components/preview/WebPreviewerHTML.css</css>
-                        <js>/res/components/preview/WebPreviewer.js</js>
-                        <js>/res/js/flash/extMouseWheel.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.FlashFox -->
-                        <js>/res/components/preview/FlashFox.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.StrobeMediaPlayback -->
-                        <js>/res/components/preview/StrobeMediaPlayback.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.Video -->
-                        <js>/res/components/preview/Video.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.Audio -->
-                        <css>/res/components/preview/Audio.css</css>
-                        <js>/res/components/preview/Audio.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.Flash -->
-                        <js>/res/components/preview/Flash.js</js>
-                        <!-- Alfresco.WebPreviewer.Plugins.Image -->
-                        <css>/res/components/preview/Image.css</css>
-                        <js>/res/components/preview/Image.js</js>
-                    </dependencies>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-document-parser</sourcePackageRoot>
                 </customization>
             </customizations>
             <auto-deploy>true</auto-deploy>

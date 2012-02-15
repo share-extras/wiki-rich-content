@@ -405,6 +405,6 @@ if (typeof Extras == "undefined" || !Extras)
       
    };
    
-   //new Extras.WikiTOCParser();
+   new Extras.WikiTOCParser();
    
 })();

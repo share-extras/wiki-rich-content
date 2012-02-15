@@ -172,6 +172,6 @@ if (typeof Extras == "undefined" || !Extras)
       
    };
    
-   //new Extras.WikiVideoParser();
+   new Extras.WikiVideoParser();
    
 })();

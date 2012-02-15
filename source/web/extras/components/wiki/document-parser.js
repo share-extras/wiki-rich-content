@@ -201,6 +201,6 @@ if (typeof Extras == "undefined" || !Extras)
       
    };
    
-   //new Extras.WikiDocumentParser();
+   new Extras.WikiDocumentParser();
    
 })();

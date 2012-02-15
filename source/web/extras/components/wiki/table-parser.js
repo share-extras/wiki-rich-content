@@ -598,6 +598,6 @@ if (typeof Extras == "undefined" || !Extras)
       }
    };
    
-   //new Extras.WikiTableParser();
+   new Extras.WikiTableParser();
    
 })();

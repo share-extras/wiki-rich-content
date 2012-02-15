@@ -124,6 +124,6 @@ if (typeof Extras == "undefined" || !Extras)
       
    };
    
-   //new Extras.WikiPrettyprintParser();
+   new Extras.WikiPrettyprintParser();
    
 })();
