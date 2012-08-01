@@ -101,3 +101,22 @@
     overflow: auto;
     max-height: 30em;
 }
+.wiki-page .rich-content .previewer.Prettify pre,
+.wiki-page .rich-content .previewer.Prettify code,
+.wiki .rich-content .previewer.Prettify pre,
+.wiki .rich-content .previewer.Prettify code
+{
+    font-size: 0.9em;
+    line-height: 1.5em;
+    border: 0px;
+    padding: 1em;
+    margin: 0 0;
+    background-color: #f0f0f0;
+    overflow: visible;
+    max-height: none;
+}
+.wiki-page .rich-content .previewer.Prettify,
+.wiki .rich-content .previewer.Prettify
+{
+    background-color: #f0f0f0;
+}
