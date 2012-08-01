@@ -213,12 +213,20 @@ if (typeof Extras == "undefined" || !Extras)
       },
 
       /**
+       * Make changes required to the edit form
+       * 
        * Called via init if the page is in edit mode
        *
        * @method _setupEditForm
        */
       _setupEditForm: function WikiPageParsers__setupEditForm()
       {
+         var pageComponent = Alfresco.util.ComponentManager.findFirst("Alfresco.WikiPage");
+         if (pageComponent)
+         {
+            var mceEditor = pageComponent.pageEditor.getEditor();
+            mceEditor.settings.theme_advanced_link_targets = "Embed=embed,Embed preview with no link=embednolink";
+         }
       }
 
    });
