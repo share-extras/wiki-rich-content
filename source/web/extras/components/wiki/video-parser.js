@@ -119,7 +119,7 @@ if (typeof Extras == "undefined" || !Extras)
          
          for (var i = 0; i < linkEls.length; i++)
          {
-            embed = null;
+            embed = null, embedUrl = null;
             linkEl = linkEls[i];
             if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.hasClass(linkEl, this.options.embedTarget) || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
                   && Dom.getAttribute(linkEl, "href") != null)
