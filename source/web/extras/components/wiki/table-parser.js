@@ -388,7 +388,7 @@ if (typeof Extras == "undefined" || !Extras)
          for (var j = 0; j < hdrs.length; j++)
          {
             name = YAHOO.lang.trim(hdrs[j].textContent||hdrs[j].innerText);
-            if (name != "")
+            if (typeof name == "string" && name != "")
             {
                names.push(name);
             }
