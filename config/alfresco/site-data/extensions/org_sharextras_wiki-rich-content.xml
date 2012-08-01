@@ -21,7 +21,7 @@
         
         <!-- TOC -->
         <module>
-            <id>Wiki Rich Content TOC</id>
+            <id>Wiki TOC</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -33,7 +33,7 @@
         
         <!-- DataTables -->
         <module>
-            <id>Wiki Rich Content Data Tables</id>
+            <id>Wiki Data Tables</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -45,7 +45,7 @@
         
         <!-- Prettyprint -->
         <module>
-            <id>Wiki Rich Content google-code-prettify Formatting</id>
+            <id>Wiki Code Formatting</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -57,7 +57,7 @@
         
         <!-- Video links -->
         <module>
-            <id>Wiki Rich Content Video Embeds</id>
+            <id>Wiki Video Embeds</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -69,7 +69,7 @@
         
         <!-- Document embeds -->
         <module>
-            <id>Wiki Rich Content Document Embeds</id>
+            <id>Wiki Document Embeds</id>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
