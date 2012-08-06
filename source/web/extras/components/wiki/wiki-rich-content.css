@@ -1,5 +1,23 @@
 /* Visual appearance customisations */
 
+.wiki-page.preview
+{
+   display: none;
+   border-top: none;
+}
+.wiki-page.preview > h2
+{
+   padding: 0.2em;
+   background: #F3F3F3;
+   font-weight: normal;
+   font-size: 1.5em;
+   color: black;
+   margin-bottom: 1em;
+   border-bottom: 1px solid #DFDFDF;
+}
+.wiki-page.preview .rich-content
+{
+}
 .wiki-page .rich-content,.wiki .rich-content
 {
     /* Comment out the following line to make the page

@@ -190,16 +190,26 @@ if (typeof Extras == "undefined" || !Extras)
          }
          
          // Content area
-         var pageText = Dom.get(this.id + "-page");
+         var pageText = Dom.get(this.id.replace("-parsers", "") + "-page");
          if (pageText)
          {
-            // Fire event to inform any listening plugins that the content is ready
-            YAHOO.Bubbling.fire("pageContentAvailable",
-            {
-               pageObj: this,
-               textEl: pageText
-            });
+            this._fireEvent(pageText);
          }
+      },
+      
+      /**
+       * Fire event to trigger parsing on the specified content
+       * 
+       * @method _fireEvent
+       */
+      _fireEvent:  function WikiPageParsers__fireEvent(el)
+      {
+         // Fire event to inform any listening plugins that the content is ready
+         YAHOO.Bubbling.fire("pageContentAvailable",
+         {
+            pageObj: this,
+            textEl: el
+         });
       },
       
       /**
@@ -225,7 +235,33 @@ if (typeof Extras == "undefined" || !Extras)
          if (pageComponent)
          {
             var mceEditor = pageComponent.pageEditor.getEditor();
-            mceEditor.settings.theme_advanced_link_targets = "Embed=embed,Embed preview with no link=embednolink";
+            mceEditor.settings.theme_advanced_link_targets = this.msg("tinymce.linkTargets.embed") + "=embed," + this.msg("tinymce.linkTargets.embedNoLink") + "=embednolink";
+            
+            var cancelBtn = Dom.get(pageComponent.id + "-cancel-button");
+            if (cancelBtn)
+            {
+               var previewBtnEl = document.createElement("input");
+               Dom.setAttribute(previewBtnEl, "type", "button");
+               Dom.setAttribute(previewBtnEl, "id", pageComponent.id + "-preview-button");
+               Dom.setAttribute(previewBtnEl, "name", "preview-button");
+               Dom.setAttribute(previewBtnEl, "value", this.msg("button.preview"));
+               Dom.insertBefore(previewBtnEl, cancelBtn);
+               this.widgets.previewBtn = new YAHOO.widget.Button(previewBtnEl);
+               
+               // Locate preview area and content divs
+               var previewDivEl = Dom.get(this.id + "-wikipage");
+               var contentDivEl = Dom.get(this.id + "-content");
+               
+               this.widgets.previewBtn.subscribe("click", function(e) {
+                  // Save contents of the editor to the textarea
+                  pageComponent.pageEditor.save();
+                  var textarea = Dom.get(pageComponent.id + "-content");
+                  Dom.setStyle(previewDivEl, "display", "block");
+                  contentDivEl.innerHTML = textarea.value;
+                  this._fireEvent(contentDivEl);
+               }, null, this);
+            }
+            
          }
       }
 
