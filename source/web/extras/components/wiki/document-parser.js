@@ -111,7 +111,144 @@ if (typeof Extras == "undefined" || !Extras)
             linkEl, link, embed, embedContainer,
             includeLink,
             docRe = new RegExp("\\/document-details\\/?\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
-            docMatch, nodeRef;
+            docMatch, nodeRef,
+            dependencies = [], dependenciesLoaded = 0, fnQueue = [],
+            hd = document.getElementsByTagName("head")[0];
+         
+         var queueFunction = function(fobj) {
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Queue function");
+            }
+            fnQueue.push(fobj);
+            if (dependencies.length == dependenciesLoaded)
+            {
+               executeQueue();
+            }
+         };
+         
+         var executeQueue = function() {
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Executing queue of " + fnQueue.length + " scripts");
+            }
+            while ((fobj = fnQueue.pop()))
+            {
+               fobj.fn.apply(fobj.scope || window, fobj.args || []);
+            }
+         };
+
+         // Load handler for the scripts/CSS. This makes sure that the 'done' handler passed in as 'fn' is only executed when all dependencies have loaded
+         var onDependencyLoaded = function(e, obj) {
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Loaded dependency " + obj);
+            }
+            dependenciesLoaded ++;
+            if (dependencies.length == dependenciesLoaded)
+            {
+               executeQueue();
+            }
+         };
+         
+         var addScript = function(scriptPath) {
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Adding JavaScript dependency " + scriptPath);
+            }
+            var scriptEl=document.createElement('script');
+            scriptEl.setAttribute("type", "text/javascript");
+            scriptEl.setAttribute("src", scriptPath);
+            YUIEvent.addListener(scriptEl, "load", onDependencyLoaded, scriptPath, this);
+            dependencies.push(scriptPath);
+            hd.appendChild(scriptEl);
+         };
+         
+         var addStyleSheet = function(cssPath) {
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Adding CSS dependency " + cssPath);
+            }
+            var linkEl=document.createElement('link');
+            linkEl.setAttribute("type", "text/css");
+            linkEl.setAttribute("rel", "stylesheet");
+            linkEl.setAttribute("href", cssPath);
+            YUIEvent.addListener(linkEl, "load", onDependencyLoaded, cssPath, this);
+            dependencies.push(cssPath);
+            hd.appendChild(linkEl);
+         };
+         
+         var addHeadResources = function(markup)
+         {
+            var scripts = [], css = [], item = null,
+               csstext = "", csslines, line, importline, 
+               scriptsregexp = /<script[^>]*src="([\s\S]*?)"[^>]*><\/script>/gi,
+               cssregexp = /<style[^>]*media="screen"[^>]*>([\s\S]*?)<\/style>/gi, 
+               importre = /@import "([\w\.\/_\-]*)";/;
+            
+            while ((item = scriptsregexp.exec(markup)))
+            {
+               scripts.push(item[1]);
+            }
+            
+            while ((item = cssregexp.exec(markup)))
+            {
+               css.push(item[1]);
+            }
+            
+            if (Alfresco.logger.isDebugEnabled())
+            {
+               Alfresco.logger.debug("Found " + scripts.length + " JS files, " + css.length + " CSS files");
+            }
+            
+            // Add JS scripts to the page
+            for (var i = 0; i < scripts.length; i++)
+            {
+               // Check script is not already on the page
+               if (!Alfresco.util.arrayContains(dependencies, scripts[i]))
+               {
+                  addScript(scripts[i]);
+               }
+            }
+
+            // Add CSS imports to the page - but use <link> tags so that we can attach event handlers
+            csslines = YAHOO.lang.trim(css.join("\n")).split("\n");
+            for (var i = 0; i < csslines.length; i++)
+            {
+               line = YAHOO.lang.trim(csslines[i]);
+               if (line)
+               {
+                  importline = importre.exec(line);
+                  if ((importline))
+                  {
+                     // Check script is not already on the page
+                     if (!Alfresco.util.arrayContains(dependencies, importline[1]))
+                     {
+                        addStyleSheet(importline[1]);
+                     }
+                  }
+                  else
+                  {
+                     if (Alfresco.logger.isDebugEnabled())
+                     {
+                        Alfresco.logger.debug("Adding CSS text " + line);
+                     }
+                     csstext += (line + "\n");
+                  }
+               }
+            }
+            
+            // Add remaining CSS to the page
+            if (csstext)
+            {
+               var styleEl=document.createElement('style');
+               styleEl.setAttribute("type", "text/css");
+               styleEl.setAttribute("media", "screen");
+               styleEl.innerHTML = csstext;
+               hd.appendChild(styleEl);
+            }
+         };
+         
          for (var i = 0; i < linkEls.length; i++)
          {
             embed = null;
@@ -129,7 +266,7 @@ if (typeof Extras == "undefined" || !Extras)
                   // 4.0 style - much simpler
                   var previewEl = document.createElement("DIV"), // container element
                      elId = Dom.generateId(previewEl, "preview-");
-
+                  
                   // Load the web-previewer mark-up using the custom page definition, which just includes that component
                   Alfresco.util.Ajax.request(
                   {
@@ -141,60 +278,16 @@ if (typeof Extras == "undefined" || !Extras)
                      {
                         fn: function WikiDocumentParser__createFromHTML_success(p_response, p_obj)
                         {
-                           var addHeadResources = function(markup, fn)
-                           {
-                              var numloadedObj = { numLoaded: 0 };
-                              var hd = document.getElementsByTagName("head")[0];
-                              var scripts = [];
-                              var script = null;
-                              var stylesheet = null;
-                              var css = [];
-                              var csstext = null;
-                              var scriptsregexp = /<script[^>]*src="([\s\S]*?)"[^>]*><\/script>/gi;
-                              while ((script = scriptsregexp.exec(markup)))
-                              {
-                                 scripts.push(script[1]);
-                              }
-                              var cssregexp = /<style[^>]*media="screen"[^>]*>([\s\S]*?)<\/style>/gi;
-                              while ((script = cssregexp.exec(markup)))
-                              {
-                                 css.push(script[1]);
-                              }
-                              csstext = css.join("\n");
-                              
-                              // Load handler for the scripts. This makes sure that the 'done' handler passed in as 'fn' is only executed when all dependencies have loaded
-                              var loadfn = function(e, obj) {
-                                 obj.numLoaded ++;
-                                 if (scripts.length == obj.numLoaded) {
-                                    fn.call(this);
-                                 }
-                              };
-                              
-                              // Add JS scripts to the page
-                              for (var i = 0; i < scripts.length; i++)
-                              {
-                                 var scriptEl=document.createElement('script');
-                                 scriptEl.setAttribute("type", "text/javascript");
-                                 scriptEl.setAttribute("src", scripts[i]);
-                                 YUIEvent.addListener(scriptEl, "load", loadfn, numloadedObj, this);
-                                 hd.appendChild(scriptEl);
-                              }
-                              
-                              // Add CSS to the page
-                              var styleEl=document.createElement('style');
-                              styleEl.setAttribute("type", "text/css");
-                              styleEl.setAttribute("media", "screen");
-                              styleEl.innerHTML = csstext;
-                              hd.appendChild(styleEl);
-                           };
-                           var phtml = p_response.serverResponse.responseText.replace(/template_x002e_web-preview/g, p_response.config.object.elId),
-                              result = Alfresco.util.Ajax.sanitizeMarkup(phtml);
+                           // Run any inline scripts in the preview component markup
                            // Following code borrowed from Alfresco.util.Ajax._successHandler
                            // Use setTimeout to execute the script. Note scope will always be "window"
                            var onloadedfn = function() {
-                              var scripts = result[1];
+                              var phtml = p_response.serverResponse.responseText.replace(/template_x002e_web-preview/g, p_response.config.object.elId),
+                                 result = Alfresco.util.Ajax.sanitizeMarkup(phtml),
+                                 scripts = result[1];
                               if (YAHOO.lang.trim(scripts).length > 0)
                               {
+                                 // Run the script content immediately
                                  window.setTimeout(scripts, 0);
                                  // Delay-call the PostExec function to continue response processing after the setTimeout above
                                  YAHOO.lang.later(0, this, function() {
@@ -202,9 +295,34 @@ if (typeof Extras == "undefined" || !Extras)
                                  }, p_response.serverResponse);
                               }
                            }
-                           addHeadResources(phtml, onloadedfn);
-                           p_response.config.object.previewEl.innerHTML = result[0];
+
+                           var phtml = p_response.serverResponse.responseText.replace(/template_x002e_web-preview/g, p_response.config.object.elId),
+                              result = Alfresco.util.Ajax.sanitizeMarkup(phtml);
+
+                           if (Alfresco.logger.isDebugEnabled())
+                           {
+                              Alfresco.logger.debug("Add head resources");
+                           }
+                           // Add <script> and <style> tags to the doc header
+                           addHeadResources(phtml);
+
+                           if (Alfresco.logger.isDebugEnabled())
+                           {
+                              Alfresco.logger.debug("Add markup");
+                           }
+                           // Add HTML markup to the Dom
+                           p_response.config.object.previewEl.innerHTML = YAHOO.lang.trim(result[0].replace(/<style.*<\/style>/m, '').replace(/<!--.*-->/m, ''));
                            Dom.addClass(p_response.config.object.previewEl, "wiki-doc-preview");
+
+                           if (Alfresco.logger.isDebugEnabled())
+                           {
+                              Alfresco.logger.debug("Queue functions");
+                           }
+                           // Queue function to be run after loading head resources
+                           queueFunction({ scope: this, args: [], fn: function() {
+                              onloadedfn.call();
+                           }});
+
                         },
                         scope: this
                      },
