@@ -110,7 +110,7 @@ if (typeof Extras == "undefined" || !Extras)
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embed, embedContainer,
             includeLink,
-            docRe = new RegExp("\\/document-details\\/?\\?nodeRef=(\\w+:\\/\\/\\w+\\/[-\\w]+)"),
+            docRe = /\/?document-details\/?\?nodeRef=(\w+):\/\/?(\w+\/[-\w]+)/gi,
             docMatch, nodeRef,
             dependencies = [], dependenciesLoaded = 0, fnQueue = [],
             hd = document.getElementsByTagName("head")[0];
@@ -261,7 +261,7 @@ if (typeof Extras == "undefined" || !Extras)
                docMatch = docRe.exec(link);
                if (docMatch)
                {
-                  nodeRef = docMatch[1];
+                  nodeRef = docMatch[1] + "://" + docMatch[2];
                   
                   // 4.0 style - much simpler
                   var previewEl = document.createElement("DIV"), // container element
