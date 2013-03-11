@@ -16,9 +16,23 @@
             </customizations>
         </module>
         
+        <!--
+            Customization module for custom wiki CSS (included in core 4.2.c)
+        -->
+        <module>
+            <id>Wiki Rich Content CSS</id>
+            <customizations>
+                <!-- Import wiki-page.ftl template extension -->
+                <customization>
+                    <targetPackageRoot>org.alfresco</targetPackageRoot>
+                    <sourcePackageRoot>org.sharextras.customization.wiki-rich-content-css</sourcePackageRoot>
+                </customization>
+            </customizations>
+        </module>
+        
         <!-- Import individual client-side parsers -->
         
-        <!-- TOC -->
+        <!-- TOC (included in core 4.2.c) -->
         <module>
             <id>Wiki TOC</id>
             <customizations>
