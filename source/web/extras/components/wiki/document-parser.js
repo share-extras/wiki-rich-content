@@ -258,7 +258,11 @@ if (typeof Extras == "undefined" || !Extras)
             {
                includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget;
                link = Dom.getAttribute(linkEl, "href");
-               docMatch = docRe.exec(link);
+               if (link)
+        	   {
+            	  link = link.replace(/%2f/ig, "/").replace(/%3a/ig, ":");
+                  docMatch = docRe.exec(link);
+        	   }
                if (docMatch)
                {
                   nodeRef = docMatch[1] + "://" + docMatch[2];
