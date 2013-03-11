@@ -24,7 +24,7 @@
             <customizations>
                 <!-- Import wiki-page.ftl template extension -->
                 <customization>
-                    <targetPackageRoot>org.alfresco</targetPackageRoot>
+                    <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
                     <sourcePackageRoot>org.sharextras.customization.wiki-rich-content-css</sourcePackageRoot>
                 </customization>
             </customizations>
