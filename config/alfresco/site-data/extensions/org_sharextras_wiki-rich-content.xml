@@ -14,7 +14,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-rich-content</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Import individual client-side parsers -->
@@ -28,7 +27,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-toc-parser</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- DataTables -->
@@ -40,7 +38,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-table-parser</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Prettyprint -->
@@ -52,7 +49,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-prettyprint-parser</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Video links -->
@@ -64,7 +60,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-video-parser</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
         <!-- Document embeds -->
@@ -76,7 +71,6 @@
                     <sourcePackageRoot>org.sharextras.customization.wiki-document-parser</sourcePackageRoot>
                 </customization>
             </customizations>
-            <auto-deploy>true</auto-deploy>
         </module>
         
     </modules>
