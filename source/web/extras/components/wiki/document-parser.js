@@ -110,7 +110,7 @@ if (typeof Extras == "undefined" || !Extras)
             linkEls = textEl.getElementsByTagName("a"), 
             linkEl, link, embed, embedContainer,
             includeLink,
-            docRe = /\/?document-details\/?\?nodeRef=(\w+):\/\/?(\w+\/[-\w]+)/gi,
+            docRe = /\/?document-details\/?\?nodeRef=(\w+):\/\/?(\w+\/[-\w]+)/i,
             docMatch, nodeRef,
             dependencies = [], dependenciesLoaded = 0, fnQueue = [],
             hd = document.getElementsByTagName("head")[0];
@@ -256,17 +256,19 @@ if (typeof Extras == "undefined" || !Extras)
             if ((Dom.getAttribute(linkEl, "target") == this.options.embedTarget || Dom.getAttribute(linkEl, "target") == this.options.embedTargetNoLink) 
                   && Dom.getAttribute(linkEl, "href") != null)
             {
+               docMatch = null;
                includeLink = Dom.getAttribute(linkEl, "target") == this.options.embedTarget;
-               link = Dom.getAttribute(linkEl, "href");
-               if (link)
-        	   {
-            	  link = link.replace(/%2f/ig, "/").replace(/%3a/ig, ":");
-                  docMatch = docRe.exec(link);
-        	   }
+               link = Dom.getAttribute(linkEl, "href").replace(/%2f/ig, "/").replace(/%3a/ig, ":");
+               Alfresco.logger.debug("Found anchor with href '" + link + "'");
+               docMatch = docRe.exec(link);
                if (docMatch)
                {
                   nodeRef = docMatch[1] + "://" + docMatch[2];
-                  
+                  if (Alfresco.logger.isDebugEnabled())
+                  {
+             	     Alfresco.logger.debug("Matched document-details URL. NodeRef: " + nodeRef);
+                  }
+             	  
                   // 4.0 style - much simpler
                   var previewEl = document.createElement("DIV"), // container element
                      elId = Dom.generateId(previewEl, "preview-");
