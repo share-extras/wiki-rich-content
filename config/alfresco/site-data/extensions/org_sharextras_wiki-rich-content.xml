@@ -7,6 +7,7 @@
         -->
         <module>
             <id>Wiki Rich Content</id>
+            <version>@VERSION@</version>
             <customizations>
                 <!-- Import wiki-page.ftl template extension -->
                 <customization>
@@ -21,6 +22,7 @@
         -->
         <module>
             <id>Wiki Rich Content CSS</id>
+            <version>@VERSION@</version>
             <customizations>
                 <!-- Import wiki-page.ftl template extension -->
                 <customization>
@@ -35,6 +37,7 @@
         <!-- TOC (included in core 4.2.c) -->
         <module>
             <id>Wiki TOC</id>
+            <version>@VERSION@</version>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -46,6 +49,7 @@
         <!-- DataTables -->
         <module>
             <id>Wiki Data Tables</id>
+            <version>@VERSION@</version>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -57,6 +61,7 @@
         <!-- Prettyprint -->
         <module>
             <id>Wiki Code Formatting</id>
+            <version>@VERSION@</version>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -68,6 +73,7 @@
         <!-- Video links -->
         <module>
             <id>Wiki Video Embeds</id>
+            <version>@VERSION@</version>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
@@ -79,6 +85,7 @@
         <!-- Document embeds -->
         <module>
             <id>Wiki Document Embeds</id>
+            <version>@VERSION@</version>
             <customizations>
                 <customization>
                     <targetPackageRoot>org.sharextras.components.wiki</targetPackageRoot>
