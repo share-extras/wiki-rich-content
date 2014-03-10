@@ -15,7 +15,7 @@ Installation
 
 The customisations are packaged as a single JAR file for easy installation into Alfresco Share.
 
-To install the customisations, simply drop the `wiki-rich-content-<version>.jar` file into the `tomcat/shared/lib` folder within your Alfresco installation, and restart the application server. You might need to create this folder if it does not already exist.
+To install the customisations, simply drop the `wiki-rich-content-<version>.jar` file into the `tomcat/shared/lib` folder within your Alfresco installation, and restart the application server. See [General Installation](https://github.com/share-extras/share-extras.github.com/wiki/General-Installation) if this folder does not exist or if the customisations do not take effect after restarting.
 
 In *Alfresco 4.x*, you need to enable the module named _Wiki Rich Content_ module within the module deployment console, once you have started Alfresco. You can access the console by visiting the following URL.
 
