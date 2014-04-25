@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.sharextras</groupId>
+    <artifactId>wiki-rich-content</artifactId>
+    <packaging>jar</packaging>
+    <name>Wiki Rich Content</name>
+    <version>2.1.2</version>
+
+    <properties>
+        <buildnumber>SNAPSHOT</buildnumber>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+    
+    <build>
+        <resources>
+            <resource>
+                <directory>config</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <warSourceDirectory>source/web</warSourceDirectory>
+                    <useCache>true</useCache>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
