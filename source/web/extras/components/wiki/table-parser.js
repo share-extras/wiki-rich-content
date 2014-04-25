@@ -551,6 +551,11 @@ if (typeof Extras == "undefined" || !Extras)
                                  }
                               };
                               
+                              if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.isFilterEnabled())
+                              {
+                                 ds.connMgr.initHeader(Alfresco.util.CSRFPolicy.getHeader(), Alfresco.util.CSRFPolicy.getToken(), false);
+                              }
+                              
                               ds.sendRequest(YAHOO.lang.JSON.stringify(requestParams),
                               {
                                  success: successHandler,
